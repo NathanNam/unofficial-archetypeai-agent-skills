@@ -180,9 +180,84 @@ Configure where results are delivered.
 ### sse.stream.end
 Indicates the stream has completed. Often arrives 60-80 seconds after last result — use early termination to avoid waiting.
 
+## Multipart File Upload (> 255 MB)
+
+#### Initiate Upload
+```
+POST /files/uploads/initiate
+Content-Type: application/json
+
+Body: { "filename": "string", "file_type": "string", "num_bytes": integer }
+Response: { "upload_id": "string", "file_uid": "string", "strategy": "multipart", "parts": [...], "expires_at": "string" }
+```
+
+#### Upload Part to S3
+```
+PUT {presigned_url}
+Content-Length: {part_length}
+
+Body: raw bytes
+Response headers: ETag (required for complete step)
+```
+
+#### Complete Upload
+```
+POST /files/uploads/{upload_id}/complete
+Content-Type: application/json
+
+Body: { "parts": [{ "part_number": integer, "part_token": "etag" }] }
+Response: { "file_uid": "string", "file_status": "Registered", "num_bytes": integer }
+```
+
+#### Abort Upload
+```
+POST /files/uploads/{upload_id}/abort
+```
+
+## Batch Jobs
+
+#### Create Batch Job
+```
+POST /jos/jobs
+Content-Type: application/json
+
+Body: {
+  "name": "string",
+  "pipeline_type": "batch",
+  "pipeline_key": "machine-state-job-pipeline" | "nano-inference-pipeline",
+  "inputs": { "<port_name>": [{ "file_id": "string", "metadata": {} }] },
+  "parameters": { "worker": { "parallelism": integer, "config": { ... } } }
+}
+Response: { "id": "job_...", "status": "PENDING", ... }
+```
+
+#### List Jobs
+```
+GET /jos/jobs?limit=10&offset=0
+```
+
+#### Get Job Status
+```
+GET /jos/jobs/{job_id}
+Response: { "id": "string", "status": "PENDING|RUNNING|COMPLETED|FAILED|CANCELLED", ... }
+```
+
+#### Get Job Events
+```
+GET /jos/jobs/{job_id}/events
+Response: { "events": [{ "level": "INFO|ERROR", "message": "string", "created_at": "string" }] }
+```
+
 ## Known Lens IDs
 
 | Lens | ID | Input | Output |
 |------|----|-------|--------|
 | Machine State | `lns-1d519091822706e2-bc108andqxf8b4os` | CSV | Classification labels + scores |
 | Activity Monitor | `lns-fd669361822b07e2-bc608aa3fdf8b4f9` | Video | Natural language text |
+
+## Known Pipeline Keys
+
+| Pipeline | Key | Type | Input Ports |
+|----------|-----|------|-------------|
+| Machine State | `machine-state-job-pipeline` | batch | `worker.inference`, `worker.n_shots` |
+| Nano Inference | `nano-inference-pipeline` | batch | `worker.data` |

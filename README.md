@@ -14,6 +14,8 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 | [newton-machine-state](skills/newton-machine-state/) | N-shot classification of sensor data using the Machine State Lens |
 | [newton-activity-monitor](skills/newton-activity-monitor/) | Vision-based analysis and Q&A using the Activity Monitor Lens |
 | [newton-sensor-streaming](skills/newton-sensor-streaming/) | Real-time sensor data ingestion patterns (BLE, OBD2, serial, etc.) |
+| [newton-batch-upload](skills/newton-batch-upload/) | Upload large files (> 255 MB) via multipart presigned URLs |
+| [newton-batch-inference](skills/newton-batch-inference/) | Create and monitor asynchronous batch processing jobs |
 
 ## Quick Start
 
@@ -30,10 +32,12 @@ cp -r skills/* your-project/.claude/skills/
 ### Invoke a Skill
 
 ```
-/newton-setup          # Set up API access
-/newton-machine-state  # Build a classification pipeline
+/newton-setup            # Set up API access
+/newton-machine-state    # Build a classification pipeline
 /newton-activity-monitor # Analyze visual data
 /newton-sensor-streaming # Connect hardware sensors
+/newton-batch-upload     # Upload large files (> 255 MB)
+/newton-batch-inference  # Run batch processing jobs
 ```
 
 ## Architecture
@@ -41,9 +45,11 @@ cp -r skills/* your-project/.claude/skills/
 Newton operates through **Lens Sessions** — persistent inference pipelines that process sensor data in real-time:
 
 ```
-Sensor Data → Upload File → Create Session → Set Input Stream → SSE Results
-                                    ↑
-                            Focus/N-shot Examples
+Real-time:  Sensor Data → Upload File → Create Session → Set Input Stream → SSE Results
+                                              ↑
+                                      Focus/N-shot Examples
+
+Batch:      Upload Files → Create Batch Job → Poll Status → View Results
 ```
 
 ### Two Core Lenses
