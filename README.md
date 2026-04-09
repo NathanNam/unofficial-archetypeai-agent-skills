@@ -68,6 +68,9 @@ These projects demonstrate the patterns covered by these skills:
 
 - [corsense-hrv](https://github.com/NathanNam/corsense-hrv) — Real-time HRV stress detection using BLE heart rate monitors + Newton Machine State & Activity Monitor
 - [obd2-scanner](https://github.com/NathanNam/obd2-scanner) — Browser-based vehicle diagnostics via OBD2/ELM327 + Newton health classification & chat
+- [newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) — Live traffic monitoring via Caltrans HLS camera + Newton vision (lens session + model.query)
+- [newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) — Wildfire detection across 1,200+ ALERTCalifornia cameras + Newton vision
+- [newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) — Real-time USGS earthquake analysis + Newton text reasoning (direct query API)
 
 ## API Base URL
 

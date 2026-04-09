@@ -67,9 +67,27 @@ The brand's color palette is deliberately scientific: **Baby Blue** for neutral 
 
 ## 3. Typography Rules
 
+### CSS Import Order
+
+```css
+@import "@archetypeai/ds-lib-tokens/theme.css";
+@import "@archetypeai/ds-lib-tokens/fonts.css";
+@import "tailwindcss";
+@import "tw-animate-css";
+```
+
+Order matters — tokens and fonts must come before Tailwind.
+
 ### Font Families
 - **Sans**: `PP Neue Montreal`, fallbacks: `system-ui, -apple-system, sans-serif`
 - **Mono**: `PP Neue Montreal Mono`, fallbacks: `Courier New, monospace`
+
+### Font Files
+Place font files in `static/fonts/`:
+- Sans: `PPNeueMontreal-{Thin,Light,Regular,Book,Medium,Bold,Italic,ThinItalic,BoldItalic}.ttf`
+- Mono: `PPNeueMontrealMono-{Thin,Regular,Book,Medium,Bold,RegularItalic}.otf`
+
+The `fonts.css` import references these at `/fonts/PPNeueMontreal-*.ttf` and `/fonts/PPNeueMontrealMono-*.otf`.
 
 ### Font Weights Available
 - **Sans**: 100 (Thin), 300 (Light), 400 (Regular/Book), 500 (Medium), 700 (Bold)
@@ -298,6 +316,13 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 - "Create a monitoring dashboard: full viewport, no scroll. Grid with fixed menubar top row. 2×2 panel grid with 16px gap. Each panel is a BackgroundCard with mono uppercase title and Lucide icon header."
 - "Design a line chart: use Cool Purple `oklch(0.66 0.177 299.333)` for primary series, Fire Red for secondary. Natural curve interpolation, 1.5px stroke. Dark background card container."
 
+### Implementation Tips (from production demos)
+- **Markdown rendering**: Newton returns markdown (bold, lists, numbered items). Use `marked` library to render responses — raw `whitespace-pre-wrap` shows literal `**asterisks**`.
+- **SVG charts**: Use `ResizeObserver` to dynamically size SVG viewBox to match the container's pixel dimensions. Avoid `preserveAspectRatio="none"` which distorts circles into ovals.
+- **ScrollArea in cards**: BackgroundCard's `CardContent` needs `min-h-0 flex-1` for `ScrollArea` to properly constrain and scroll inside flex containers.
+- **Status inference**: When classifying Newton's text responses (e.g., traffic normal vs congestion), check for negation patterns ("no visible incidents") before keyword matching to avoid false positives.
+- **Camera watermarks**: ALERTCalifornia cameras have a "UC San Diego" watermark. Newton reads it and assumes location — explicitly tell Newton to ignore watermarks in the instruction prompt.
+
 ### Iteration Guide
 1. Start with the dark canvas — `oklch(0.141 0.005 285.823)` background
 2. Cards step up to `oklch(0.21 0.006 285.885)` with `oklch(1 0 0 / 10%)` borders
@@ -308,3 +333,11 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 7. Full-viewport dashboards, panel-based composition, no page scroll
 8. Mono + uppercase + tracking-wider for card headers and labels
 9. Data provenance is always visible — sensors, locations, timestamps
+
+## 10. Reference Implementations
+
+| Demo | Data Type | Newton API | Repo |
+|------|-----------|------------|------|
+| **Traffic Monitor** | HLS video stream (Caltrans CCTV) | Lens session + `model.query` (vision) | [archetypeai/newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) |
+| **Wildfire Watch** | JPEG snapshots (ALERTCalifornia 1,200+ cameras) | Lens session + `model.query` (vision) | [archetypeai/newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) |
+| **Seismic Monitor** | USGS earthquake catalog (structured text) | Direct query `/v0.5/query` (reasoning) | [archetypeai/newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) |
