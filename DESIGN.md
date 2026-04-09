@@ -1,0 +1,310 @@
+# Design System Inspiration of Archetype AI
+
+## 1. Visual Theme & Atmosphere
+
+Archetype AI's design system is built for **Physical AI interfaces** — dashboards, monitoring views, and sensor-driven applications where humans reason about the physical world alongside AI. The aesthetic is dark-first, data-dense, and technically precise — closer to mission control than consumer software.
+
+The foundation is a near-black background (`oklch(0.141 0.005 285.823)`) with light foreground text (`oklch(0.985 0 0)`), creating a high-contrast canvas where data visualizations, status indicators, and sensor readouts command attention. Cards float on a slightly lighter surface (`oklch(0.21 0.006 285.885)`) with `10%` white borders that create subtle depth without distraction.
+
+Typography uses **PP Neue Montreal** — a geometric neo-grotesque sans-serif — paired with **PP Neue Montreal Mono** for technical data. The mono font appears on badges, card headers, numeric readouts, and status labels — never on body text. Headings are set in normal weight (400) with tight tracking, giving them an understated, engineering-grade quality rather than marketing boldness.
+
+The brand's color palette is deliberately scientific: **Baby Blue** for neutral states, **Screen Green** for healthy/good, **Sunshine Yellow** for warnings, and **Fire Red** for critical alerts. A secondary palette of **Cool Purple**, **Energy Pink**, **Tangerine**, and **Lime** provides chart series colors. These are OKLCH-native, perceptually uniform, and designed for data legibility across light and dark modes.
+
+**Key Characteristics:**
+- Dark-first design with near-black backgrounds and high-contrast text
+- PP Neue Montreal (sans) + PP Neue Montreal Mono (mono) type pairing
+- OKLCH color system — perceptually uniform across all palettes
+- Semantic status colors: green (good), yellow (warning), red (critical), blue (neutral)
+- Data-dense layouts: full-viewport dashboards, no scrolling, 2×2/3×2 panel grids
+- Mono font for all technical data: badges, headers, timestamps, scores
+- Minimal border-radius (`0.125rem` / 2px) — sharp, technical aesthetic
+- Card-based composition with `BackgroundCard` as the default container
+- Physical context always visible: sensor IDs, locations, time ranges, camera sources
+
+## 2. Color Palette & Roles
+
+### Semantic Surface Tokens (Dark Mode — Primary)
+- **Background**: `oklch(0.141 0.005 285.823)` — near-black page background
+- **Card**: `oklch(0.21 0.006 285.885)` — elevated card surfaces
+- **Muted**: `oklch(0.274 0.006 286.033)` — secondary surfaces, inactive areas
+- **Border**: `oklch(1 0 0 / 10%)` — subtle white borders
+- **Input**: `oklch(1 0 0 / 15%)` — input field backgrounds
+
+### Semantic Surface Tokens (Light Mode)
+- **Background**: `oklch(1 0 0)` — pure white
+- **Card**: `oklch(0.99 0 0)` — near-white cards
+- **Muted**: `oklch(0.967 0.001 286.375)` — light gray surfaces
+- **Border**: `oklch(0.92 0.004 286.32)` — light gray borders
+
+### Text Scale
+- **Foreground (dark)**: `oklch(0.985 0 0)` — near-white primary text
+- **Muted Foreground (dark)**: `oklch(0.705 0.015 286.067)` — secondary text, descriptions
+- **Foreground (light)**: `oklch(0.141 0.005 285.823)` — near-black primary text
+- **Muted Foreground (light)**: `oklch(0.552 0.016 285.938)` — gray secondary text
+
+### Status System (ATAI Brand)
+- **Good / Healthy**: Screen Green 200 `oklch(0.822 0.208 146.907)` — normal operations, passing checks
+- **Warning**: Sunshine Yellow 50–100 `oklch(0.95 0.18 110.904)` — attention needed, degraded performance
+- **Critical**: Fire Red 500 `oklch(0.641 0.214 25.595)` — errors, failures, incidents
+- **Neutral / Info**: Baby Blue 300 `oklch(0.794 0.091 250.497)` — informational, no severity
+
+### Chart Series
+- **Chart 1**: Cool Purple 500 `oklch(0.66 0.177 299.333)` — primary data series
+- **Chart 2**: Fire Red 500 `oklch(0.641 0.214 25.595)` — secondary series
+- **Chart 3**: Sunshine Yellow 500 `oklch(0.63 0.12 110.904)` — tertiary series
+- **Chart 4**: Baby Blue 800 `oklch(0.534 0.129 250.497)` — quaternary series
+- **Chart 5**: Energy Pink 600 `oklch(0.603 0.2 5.943)` — fifth series
+
+### Brand Palette (Full Scale, 50–950)
+- **Tangerine**: Hue 85.144 — warm amber accent
+- **Sunshine Yellow**: Hue 110.904 — warning states, chart color
+- **Lime**: Hue 123.573 — secondary green
+- **Screen Green**: Hue 146.907 — healthy/good status
+- **Fire Red**: Hue 25.595 — critical/destructive states
+- **Energy Pink**: Hue 5.943 — chart accent
+- **Cool Purple**: Hue 299.333 — primary chart color
+- **Baby Blue**: Hue 250.497 — neutral info, sidebar accents
+
+## 3. Typography Rules
+
+### Font Families
+- **Sans**: `PP Neue Montreal`, fallbacks: `system-ui, -apple-system, sans-serif`
+- **Mono**: `PP Neue Montreal Mono`, fallbacks: `Courier New, monospace`
+
+### Font Weights Available
+- **Sans**: 100 (Thin), 300 (Light), 400 (Regular/Book), 500 (Medium), 700 (Bold)
+- **Mono**: 100 (Thin), 400 (Regular/Book), 500 (Medium), 700 (Bold)
+
+### Heading Hierarchy
+
+| Element | Font | Size | Weight | Line Height | Tracking | Transform | Notes |
+|---------|------|------|--------|-------------|----------|-----------|-------|
+| `h1` | PP Neue Montreal | 2.25rem (36px) | 400 (normal) | normal | tight | capitalize | Primary page title |
+| `h2` | PP Neue Montreal | 1.875rem (30px) | 400 (normal) | tight | tight | — | Section heading |
+| `h3` | PP Neue Montreal | 1.5rem (24px) | 400 (normal) | normal | tight | — | Subsection heading |
+| `h4` | PP Neue Montreal | 1.25rem (20px) | 400 (normal) | tight | tight | — | Muted foreground color |
+| `h5` | PP Neue Montreal | 1.125rem (18px) | 400 (normal) | tight | tight | uppercase | Muted, uppercase label |
+| `h6` | PP Neue Montreal | 1rem (16px) | 400 (normal) | tight | tight | — | Muted smallest heading |
+| `p` | PP Neue Montreal | 0.875rem (14px) | 400 | tight | normal | — | Body text |
+| `small` | PP Neue Montreal | 0.75rem (12px) | 400 | tight | normal | — | Captions, fine print |
+| `code` | PP Neue Montreal Mono | 0.875rem (14px) | 400 | relaxed | normal | — | Inline code |
+
+### Mono Font Usage (Critical Convention)
+The mono font (`font-mono`) is used deliberately on specific UI elements — never as body text:
+- **Badge labels**: status text, category tags
+- **Card headers**: BackgroundCard titles (uppercase, tracking-wider)
+- **Button labels**: all button text
+- **Numeric values**: scores, percentages, counts, timestamps
+- **Status indicators**: health scores, sensor readings
+- **Table headers**: data table column labels
+
+### Principles
+- **Normal weight headings**: All headings use weight 400 (normal) — no bold headings. The hierarchy comes from size and color, not weight.
+- **Tight tracking on headings**: `tracking-tight` creates a technical, precise feel.
+- **Muted lower headings**: `h4`, `h5`, `h6` use `text-muted-foreground` — headings de-escalate in visual prominence.
+- **Uppercase sparingly**: Only `h5` and BackgroundCard titles use uppercase. Combined with mono and tracking-wider for a label/category effect.
+
+## 4. Component Stylings
+
+### Buttons
+
+**Default (Primary)**
+- Background: `bg-primary` (near-black in light, light gray in dark)
+- Text: `text-primary-foreground`
+- Radius: `rounded-xs` (2px)
+- Height: `h-9` (36px), padding: `px-4`
+- Hover: `bg-primary/90`
+- Shadow: `shadow-xs`
+
+**Outline**
+- Background: `bg-background`, border: `border-border`
+- Dark: `bg-input/30`, `border-input`, hover `bg-input/50`
+- Radius: `rounded-xs` (2px)
+
+**Ghost**
+- Transparent background
+- Hover: `bg-accent` with `text-accent-foreground`
+
+**Destructive**
+- Background: `bg-destructive` (Fire Red 500)
+- Text: white
+- Dark: `bg-destructive/60`
+
+**Sizes**: default (`h-9`), sm (`h-8`), lg (`h-10`), icon (`size-9`), icon-sm (`size-8`), icon-lg (`size-10`)
+
+### Cards & Containers
+
+**BackgroundCard** (default container for single-purpose panels)
+- Padding: `p-4`
+- Background: `bg-card` semantic token
+- Border: 1px `border-border`
+- Radius: `rounded-xs` (2px)
+- Header: mono font, uppercase, `tracking-wider`, with optional Lucide icon
+- Content: `flex flex-col gap-6`
+
+**Card**
+- Background: `bg-card text-card-foreground`
+- Radius: `rounded-xs`
+- Border: 1px
+- Shadow: `shadow-sm`
+- Layout: `flex flex-col gap-6 py-6`
+
+### Badges
+
+**Default Badge**
+- Radius: `rounded-md` (6px) — the one element with rounded corners
+- Font: `font-mono text-xs`
+- Padding: `px-2.5 py-0.5`
+- Variants: default, secondary, outline, destructive
+
+**StatusBadge Pattern**
+- Grid layout: avatar + label + percentage
+- Avatar with status-colored background (green/yellow/red)
+- Label: mono, uppercase, truncated
+- Score: mono, right-aligned
+
+### FlatLogItem Pattern
+- Left color stripe (2px) — `bg-atai-good`, `bg-atai-warning`, `bg-atai-critical`, or `bg-muted-foreground`
+- Status badge with icon: CircleCheck (good), TriangleAlert (warning), CircleX (critical), Info (neutral)
+- Badge text: mono, uppercase, colored background matching status
+- Body text: `text-muted-foreground`, `whitespace-pre-wrap`
+- Detail (timestamp): `font-mono text-sm`, right-aligned
+
+### Inputs
+- Background: transparent
+- Border: `border-input`
+- Radius: `rounded-xs`
+- Focus: `ring-ring/50`, 3px ring
+- Invalid: `aria-invalid:border-destructive`, `aria-invalid:ring-destructive/20`
+
+### Icons (Lucide)
+- Default stroke width: 1 (`--atai-icon-stroke-default`)
+- Interactive: 1.25 (`--atai-icon-stroke-interactive`)
+- Status indicators: 1.5 (`--atai-icon-stroke-status`)
+- Emphasis/action: 2 (`--atai-icon-stroke-emphasis`)
+- Sizing: `size-4` (16px) in buttons, `size-6` (24px) in card headers
+
+## 5. Layout Principles
+
+### Spacing System
+- **xs**: 0.25rem (4px)
+- **sm**: 0.5rem (8px)
+- **md**: 0.75rem (12px)
+- **lg**: 1rem (16px)
+- **xl**: 1.5rem (24px)
+- Standard Tailwind spacing scale also available
+
+### Dashboard Layout (Primary Pattern)
+- Full viewport: `h-screen w-screen overflow-hidden` — no page scrolling
+- Grid: `grid-rows-[auto_1fr]` — fixed menubar + flexible content area
+- Content: `grid grid-cols-2 grid-rows-2 gap-4 p-4` — 2×2 panel grid
+- Each panel: `max-h-full` with internal scroll via `ScrollArea`
+
+### Menubar
+- Fixed header: `border-b px-4 py-2`
+- Left: Archetype AI logo + optional partner branding (mono, uppercase)
+- Right: action buttons + dark mode toggle
+- Flexbox: `flex items-center justify-between`
+
+### Whitespace Philosophy
+- **Data density over decoration**: Panels use every pixel — content areas flex to fill, no decorative whitespace.
+- **Gap-based spacing**: Consistent `gap-4` between panels, `gap-6` inside cards. No margin-based spacing.
+- **Overflow management**: Each panel handles its own scroll. The page never scrolls.
+- **Padding consistency**: `p-4` on cards and main content area.
+
+### Border Radius Scale
+- **Interactive (xs)**: 0.125rem (2px) — buttons, cards, inputs, all interactive elements
+- **Badge (md)**: 0.375rem (6px) — badges only
+- **Full**: 9999px — avatars, circular indicators
+
+## 6. Depth & Elevation
+
+| Level | Treatment | Use |
+|-------|-----------|-----|
+| Flat (Level 0) | No shadow, no border | Page background |
+| Card (Level 1) | `shadow-sm` + 1px border | Cards, panels, popovers |
+| Elevated (Level 2) | `shadow-lg` | Dialogs, sheets, dropdowns |
+| Focus Ring | `ring-[3px] ring-ring/50` | Keyboard focus indicators |
+
+**Depth Philosophy**: Archetype AI uses minimal elevation. In dark mode, depth comes primarily from **surface color stepping** (background → card → muted) and **border opacity** (`oklch(1 0 0 / 10%)`) rather than shadows. Shadows are barely perceptible in dark mode — borders do the heavy lifting. This creates a flat, technical aesthetic appropriate for data-dense dashboards.
+
+## 7. Do's and Don'ts
+
+### Do
+- Use the dark mode as the primary design target — it's the default for monitoring interfaces
+- Apply `font-mono` to badges, card headers, numeric values, timestamps, and buttons — technical UI elements
+- Use semantic status tokens (`atai-good`, `atai-warning`, `atai-critical`) only for meaningful states — never decoratively
+- Keep all headings at weight 400 (normal) — size and color create hierarchy, not boldness
+- Use `rounded-xs` (2px) for all interactive elements — the sharp aesthetic is intentional
+- Compose layouts with BackgroundCard as the default panel container
+- Show physical context: sensor IDs, camera locations, time ranges, data provenance
+- Use `cn()` from `$lib/utils.js` for all class merging — never string concatenation
+- Design for full-viewport dashboards with no page scroll
+- Frame AI output as observation, not conclusion — the human decides
+
+### Don't
+- Don't use mono font for body text, descriptions, or paragraphs — only for technical data elements
+- Don't use bold (700) headings — the system uses normal weight throughout
+- Don't apply status colors for decoration — green/yellow/red carry severity meaning
+- Don't use large border-radius (8px+) on cards or buttons — `rounded-xs` (2px) is the standard
+- Don't add shadows for depth in dark mode — use surface color stepping and border opacity instead
+- Don't create scrolling pages — use fixed-viewport layouts with internal panel scroll
+- Don't use `text-primary` for secondary content — use `text-muted-foreground` for descriptions and metadata
+- Don't hardcode colors — always use semantic tokens that adapt to light/dark mode
+- Don't add decorative whitespace — every pixel should serve data display or readability
+
+## 8. Responsive Behavior
+
+### Design Target
+Archetype AI interfaces are primarily designed for **desktop monitoring environments** — wide screens, high resolution, landscape orientation. The full-viewport dashboard pattern assumes 1280px+ widths.
+
+### Breakpoints (Standard Tailwind)
+| Name | Width | Key Changes |
+|------|-------|-------------|
+| sm | 640px | Stack panels vertically |
+| md | 768px | 2-column layouts possible |
+| lg | 1024px | Full 2×2 dashboard grid |
+| xl | 1280px | Comfortable dashboard density |
+| 2xl | 1536px | Extra breathing room |
+
+### Collapsing Strategy
+- Dashboard grid: 2×2 → 2×1 → 1×1 stacked columns on smaller screens
+- Menubar: logo + controls stay; partner branding may collapse
+- BackgroundCard: panels become full-width and individually scrollable
+- Charts: maintain aspect ratio, reduce detail density
+
+### Touch Considerations
+- Icon buttons: `size-9` (36px) minimum touch target
+- Input fields: `h-9` (36px) standard height
+- Buttons: `h-8` to `h-10` range for comfortable tapping
+
+## 9. Agent Prompt Guide
+
+### Quick Color Reference (Dark Mode)
+- Background: `oklch(0.141 0.005 285.823)` — near-black
+- Card surface: `oklch(0.21 0.006 285.885)` — dark gray
+- Text: `oklch(0.985 0 0)` — near-white
+- Secondary text: `oklch(0.705 0.015 286.067)` — muted gray
+- Border: `oklch(1 0 0 / 10%)` — 10% white
+- Good/healthy: `oklch(0.822 0.208 146.907)` — Screen Green
+- Warning: `oklch(0.95 0.18 110.904)` — Sunshine Yellow
+- Critical: `oklch(0.641 0.214 25.595)` — Fire Red
+- Neutral: `oklch(0.794 0.091 250.497)` — Baby Blue
+
+### Example Component Prompts
+- "Create a status dashboard card: dark background `oklch(0.21 0.006 285.885)`, 1px border at `oklch(1 0 0 / 10%)`, 2px border-radius. Header in PP Neue Montreal Mono, uppercase, tracking-wider, with a Lucide icon at stroke-width 1.25. Content area with `gap-6`."
+- "Design a status badge: rounded-md (6px radius), PP Neue Montreal Mono at 12px, uppercase. Use Screen Green `oklch(0.822 0.208 146.907)` background for healthy state with dark text."
+- "Build a log item: 2px left color stripe (green/yellow/red by severity). Status badge with icon, mono uppercase label. Body text in muted gray `oklch(0.705 0.015 286.067)`, timestamp right-aligned in mono."
+- "Create a monitoring dashboard: full viewport, no scroll. Grid with fixed menubar top row. 2×2 panel grid with 16px gap. Each panel is a BackgroundCard with mono uppercase title and Lucide icon header."
+- "Design a line chart: use Cool Purple `oklch(0.66 0.177 299.333)` for primary series, Fire Red for secondary. Natural curve interpolation, 1.5px stroke. Dark background card container."
+
+### Iteration Guide
+1. Start with the dark canvas — `oklch(0.141 0.005 285.823)` background
+2. Cards step up to `oklch(0.21 0.006 285.885)` with `oklch(1 0 0 / 10%)` borders
+3. PP Neue Montreal for everything — mono variant for technical data, sans for prose
+4. All headings weight 400 — hierarchy from size and color, not boldness
+5. Status colors carry meaning: green = good, yellow = warning, red = critical, blue = info
+6. 2px border-radius on everything except badges (6px) and avatars (full)
+7. Full-viewport dashboards, panel-based composition, no page scroll
+8. Mono + uppercase + tracking-wider for card headers and labels
+9. Data provenance is always visible — sensors, locations, timestamps
