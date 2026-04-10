@@ -30,8 +30,8 @@ Classifies time-series sensor data using n-shot examples. Uses Newton to vectori
 **Pipeline key:** `machine-state-job-pipeline`
 
 **Available model types:**
-- `omega_1_3_slb_surface` — surface sensor monitoring (expects 9 sensor channels)
-- `omega_1_3_slb_power_drive` — downhole power drive monitoring (expects 9 sensor channels)
+- `omega_1_3_surface` — surface sensor monitoring (expects 9 sensor channels)
+- `omega_1_3_power_drive` — downhole power drive monitoring (expects 9 sensor channels)
 
 **Input ports:**
 - `worker.inference` — files to classify
@@ -63,7 +63,7 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
       "worker": {
         "parallelism": 1,
         "config": {
-          "model_type": "omega_1_3_slb_surface",
+          "model_type": "omega_1_3_surface",
           "batch_size": 8,
           "timestamp_column": "timestamp",
           "data_columns": ["col_1", "col_2", "col_3", "col_4", "col_5", "col_6", "col_7", "col_8", "col_9"],
@@ -167,7 +167,7 @@ Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet availabl
 
 - **Poll status periodically** — jobs can run for minutes to hours depending on data size
 - **Check events on failure** — the events endpoint provides detailed error messages
-- **Match model expectations** — `omega_1_3_slb_surface` expects exactly 9 sensor columns
+- **Match model expectations** — `omega_1_3_surface` expects exactly 9 sensor columns
 - **Ensure enough n-shot windows** — with `window_size=64` and `step_size=1`, you need at least `n_neighbors + window_size` rows per n-shot file
 - **Use `flush_every_n_iteration`** — controls how often intermediate results are saved
 
