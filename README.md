@@ -71,6 +71,7 @@ These projects demonstrate the patterns covered by these skills:
 - [newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) — Live traffic monitoring via Caltrans HLS camera + Newton vision (lens session + model.query)
 - [newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) — Wildfire detection across 1,200+ ALERTCalifornia cameras + Newton vision
 - [newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) — Real-time USGS earthquake analysis + Newton text reasoning (direct query API)
+- [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Nano Inference)
 
 ## API Base URL
 

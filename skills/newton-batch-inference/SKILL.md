@@ -5,7 +5,7 @@ description: >
   Use when the user wants to run inference on large datasets asynchronously,
   classify sensor data at scale using the Machine State pipeline, or run
   Newton's Nano Inference on uploaded files. This skill covers job creation,
-  status polling, and event log retrieval.
+  status polling, event log retrieval, output download, and config optimization.
   Do NOT use for real-time streaming inference (use newton-machine-state or newton-activity-monitor).
   Do NOT use for file uploads (use newton-batch-upload).
 ---
@@ -20,6 +20,7 @@ Create and monitor asynchronous batch processing jobs on the Newton platform. Pr
 - User asks about batch processing or asynchronous inference
 - User wants to run Newton on a file without a WebSocket session
 - User needs to process multiple files through a pipeline
+- User wants to optimize pipeline config for best accuracy
 
 ## Available Pipelines
 
@@ -30,33 +31,38 @@ Classifies time-series sensor data using n-shot examples. Uses Newton to vectori
 **Pipeline key:** `machine-state-job-pipeline`
 
 **Available model types:**
-- `omega_1_3_surface` — surface sensor monitoring (expects 9 sensor channels)
-- `omega_1_3_power_drive` — downhole power drive monitoring (expects 9 sensor channels)
+- `omega_1_3_surface` — surface sensor monitoring (9 channels)
+- `omega_1_3_power_drive` — downhole power drive monitoring (9 channels)
 
 **Input ports:**
-- `worker.inference` — files to classify
-- `worker.n_shots` — labeled example files with `metadata.class`
+- `worker.inference` — CSV files to classify
+- `worker.n_shots` — labeled CSV example files with `metadata.class`
 
 **Data requirements:**
-- CSV files must include a `timestamp` column (Unix time)
-- `data_columns` must specify exactly which columns to use as sensor channels
-- Models expect 9 sensor channels — using more or fewer causes shape errors
-- `window_size` controls how many time steps per classification window
-- N-shot files need enough rows to produce windows: `(rows - window_size) / step_size` must be >= `n_neighbors`
+- CSV files must include a timestamp column (Unix epoch)
+- `data_columns` must specify exactly 9 sensor columns — more or fewer causes shape errors
+- `window_size` controls time steps per window (e.g., 16, 32, 64, 128) — value of 1 causes tensor errors
+- N-shot files need enough rows to produce windows: `(rows - window_size) / step_size >= n_neighbors`
+- N-shot labels should use ACTC rig mode codes for consistent ground truth, not sensor heuristics
+
+**Recommended drilling sensor columns:**
+```
+DATE_TIME, BPOS, DBTM, FLWI, HDTH, HKLD, ROP, RPM, SPPA, WOB
+```
 
 ```bash
 curl -s -X POST "$BASE_URL/jos/jobs" \
   -H "Authorization: Bearer $ATAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "my-classification-job",
+    "name": "drilling-classification",
     "pipeline_type": "batch",
     "pipeline_key": "machine-state-job-pipeline",
     "inputs": {
-      "worker.inference": [{"file_id": "sensor_data.csv"}],
+      "worker.inference": [{"file_id": "volve_inference.csv"}],
       "worker.n_shots": [
-        {"file_id": "normal_examples.csv", "metadata": {"class": "normal"}},
-        {"file_id": "anomaly_examples.csv", "metadata": {"class": "anomaly"}}
+        {"file_id": "volve_drilling.csv", "metadata": {"class": "drilling"}},
+        {"file_id": "volve_not_drilling.csv", "metadata": {"class": "not_drilling"}}
       ]
     },
     "parameters": {
@@ -65,10 +71,10 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
         "config": {
           "model_type": "omega_1_3_surface",
           "batch_size": 8,
-          "timestamp_column": "timestamp",
-          "data_columns": ["col_1", "col_2", "col_3", "col_4", "col_5", "col_6", "col_7", "col_8", "col_9"],
+          "timestamp_column": "DATE_TIME",
+          "data_columns": ["BPOS","DBTM","FLWI","HDTH","HKLD","ROP","RPM","SPPA","WOB"],
           "reader_config": {"window_size": 64, "step_size": 1},
-          "classifier_config": {"n_neighbors": 3, "metric": "euclidean", "weights": "uniform"},
+          "classifier_config": {"n_neighbors": 5, "metric": "euclidean", "weights": "uniform"},
           "flush_every_n_iteration": 1000
         }
       }
@@ -78,23 +84,37 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
 
 ### Pipeline 2: Nano Inference Pipeline
 
-General-purpose inference using Newton's language generation on input data files.
+Text generation inference using Newton's language capabilities on input data files.
 
 **Pipeline key:** `nano-inference-pipeline`
 
 **Input ports:**
-- `worker.data` — files to run inference on
+- `worker.data` — JSONL files (not raw CSV — raw CSV causes `"error": "parse error"`)
+
+**Input format:** Each line must be a JSON object:
+```json
+{"system": "You are a drilling analyst.", "instruction": "Describe the rig state.", "prompt": "BPOS: 10.02, DBTM: 259.92, ..."}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `system` | string | No | System prompt (include sensor definitions for better results) |
+| `instruction` | string | No | Task instruction |
+| `prompt` | string | No | User prompt / input text |
+| `inputs` | array | No | Multimodal inputs (images, video) |
+
+**Important:** The base Newton model without fine-tuning may not interpret sensor abbreviations correctly. Include sensor definitions in the `system` prompt. For classification tasks, use Machine State Pipeline instead.
 
 ```bash
 curl -s -X POST "$BASE_URL/jos/jobs" \
   -H "Authorization: Bearer $ATAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "my-inference-job",
+    "name": "nano-inference",
     "pipeline_type": "batch",
     "pipeline_key": "nano-inference-pipeline",
     "inputs": {
-      "worker.data": [{"file_id": "my_data.csv"}]
+      "worker.data": [{"file_id": "volve_nano_200.jsonl"}]
     },
     "parameters": {
       "worker": {
@@ -114,6 +134,10 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
   }'
 ```
 
+**Nano Inference limitations:**
+- Large files (millions of rows) will timeout — keep batches to 200-1000 rows
+- Output format: `{"line_index": 0, "prediction": "Based on the readings..."}`
+
 ## Monitoring Jobs
 
 ### Check Status
@@ -132,15 +156,22 @@ curl -s "$BASE_URL/jos/jobs/$JOB_ID/events" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 ```
 
-Returns timestamped events with `level` (INFO/ERROR) and `message`:
-```json
-{
-  "events": [
-    {"event_type": "running_job", "level": "INFO", "message": "Running job"},
-    {"event_type": "vectorizing_file", "level": "INFO", "message": "Vectorizing file data.csv - Done 0.3 sec"},
-    {"event_type": "info", "level": "INFO", "message": "Saving chunk with result for data.csv - Done 0.1 sec"}
-  ]
-}
+### Download Outputs
+
+```bash
+# List output artifacts (paginated, presigned S3 URLs, 1-hour expiry)
+curl -s "$BASE_URL/jos/jobs/$JOB_ID/outputs?limit=50&offset=0" \
+  -H "Authorization: Bearer $ATAI_API_KEY"
+
+# Download artifact (no auth needed — signature is in the URL)
+curl -s -o output.csv "$PRESIGNED_URL"
+```
+
+Machine State output format:
+```csv
+DATE_TIME,Prediction
+1232522644,drilling
+1190749684,not_drilling
 ```
 
 ### List All Jobs
@@ -150,6 +181,19 @@ curl -s "$BASE_URL/jos/jobs?limit=10&offset=0" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 ```
 
+## Config Optimization
+
+The Machine State pipeline has several tunable hyperparameters. Use grid search with a small test dataset (200 rows) to find the best config before running on the full dataset:
+
+| Parameter | Values to try | Description |
+|-----------|--------------|-------------|
+| `window_size` | 16, 32, 64, 128 | Time steps per classification window |
+| `n_neighbors` | 3, 5, 7, 11 | KNN neighbors |
+| `metric` | euclidean, cosine, manhattan | Distance metric |
+| `weights` | uniform, distance | KNN weight function |
+
+See `optimize_config.py` in [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for an automated grid search script.
+
 ## API Reference
 
 | Endpoint | Method | Description |
@@ -158,19 +202,32 @@ curl -s "$BASE_URL/jos/jobs?limit=10&offset=0" \
 | `/v0.5/jos/jobs` | GET | List all jobs |
 | `/v0.5/jos/jobs/{job_id}` | GET | Get job status |
 | `/v0.5/jos/jobs/{job_id}/events` | GET | Get job events/logs |
+| `/v0.5/jos/jobs/{job_id}/outputs` | GET | List output artifacts (paginated, presigned URLs) |
 
 ## Fine-Tuning (TBD)
 
-Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet available in production. It requires JSONL-formatted training data. See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for the JSONL converter and dataset schema.
+Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet available. It requires JSONL-formatted training data. See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for the JSONL converter.
+
+## Common Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `shape '[-1, 6912]' is invalid for input of size N` | Wrong number of `data_columns` | Must be exactly 9 columns |
+| `n_neighbors must be <= number of samples in index` | N-shot files too small for `window_size` | Increase n-shot rows or decrease `window_size` |
+| `could not parse as dtype i64` | Mixed int/float values in CSV | Ensure all sensor values are formatted as floats |
+| `"error": "parse error"` (Nano) | Raw CSV sent to Nano pipeline | Must use JSONL format with system/instruction/prompt |
+| `Failed to resolve file inputs` | File not uploaded | Upload file first via Files API |
 
 ## Best Practices
 
+- **Start with quick tests** — use 200-row samples to verify pipeline works before full runs
+- **Use ACTC labels for n-shots** — rig control system labels are more reliable than sensor heuristics
+- **Optimize config first** — grid search over hyperparameters with small data before committing to a multi-hour full run
 - **Poll status periodically** — jobs can run for minutes to hours depending on data size
 - **Check events on failure** — the events endpoint provides detailed error messages
 - **Match model expectations** — `omega_1_3_surface` expects exactly 9 sensor columns
-- **Ensure enough n-shot windows** — with `window_size=64` and `step_size=1`, you need at least `n_neighbors + window_size` rows per n-shot file
-- **Use `flush_every_n_iteration`** — controls how often intermediate results are saved
+- **Ensure enough n-shot windows** — `(rows - window_size) / step_size >= n_neighbors`
 
 ## Example Code
 
-See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for full Python, shell, and curl implementations.
+See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for full Python, shell, and curl implementations including data preparation, config optimization, and evaluation scripts.

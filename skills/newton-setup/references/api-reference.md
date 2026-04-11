@@ -248,6 +248,22 @@ GET /jos/jobs/{job_id}/events
 Response: { "events": [{ "level": "INFO|ERROR", "message": "string", "created_at": "string" }] }
 ```
 
+#### Get Job Outputs
+```
+GET /jos/jobs/{job_id}/outputs?limit=50&offset=0
+
+Response: {
+  "total": integer,
+  "outputs": [{
+    "data": {
+      "ref": "https://s3...presigned-url...",  (1-hour expiry, no auth needed)
+      "filename": "pred_volve_inference_part_0.csv",
+      "num_bytes": integer
+    }
+  }]
+}
+```
+
 ## Known Lens IDs
 
 | Lens | ID | Input | Output |
