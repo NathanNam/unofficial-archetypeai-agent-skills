@@ -341,3 +341,5 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 | **Traffic Monitor** | HLS video stream (Caltrans CCTV) | Lens session + `model.query` (vision) | [archetypeai/newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) |
 | **Wildfire Watch** | JPEG snapshots (ALERTCalifornia 1,200+ cameras) | Lens session + `model.query` (vision) | [archetypeai/newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) |
 | **Seismic Monitor** | USGS earthquake catalog (structured text) | Direct query `/v0.5/query` (reasoning) | [archetypeai/newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) |
+| **Grid Monitor** | CAISO supply/demand CSVs (5-min intervals) | Direct query `/v0.5/query` (reasoning) | [archetypeai/newton-grid-demo](https://github.com/archetypeai/newton-grid-demo) |
+| **Drilling Monitor** | Volve oil field sensor data (14 wells, North Sea) | Machine State Lens (SSE streaming) | [archetypeai/newton-drilling-demo](https://github.com/archetypeai/newton-drilling-demo) |
