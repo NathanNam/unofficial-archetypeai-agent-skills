@@ -2,10 +2,10 @@
 name: newton-batch-inference
 description: >
   Create and monitor batch processing jobs on the Archetype AI Newton platform.
-  Use when the user wants to run inference on large datasets asynchronously,
-  classify sensor data at scale using the Machine State pipeline, or run
-  Newton's Nano Inference on uploaded files. This skill covers job creation,
-  status polling, event log retrieval, output download, and config optimization.
+  Use when the user wants to run inference on large datasets asynchronously
+  or classify sensor data at scale using the Machine State Classification
+  pipeline. This skill covers job creation, status polling, event log retrieval,
+  output download, and config optimization.
   Do NOT use for real-time streaming inference (use newton-machine-state or newton-activity-monitor).
   Do NOT use for file uploads (use newton-batch-upload).
 ---
@@ -22,13 +22,11 @@ Create and monitor asynchronous batch processing jobs on the Newton platform. Pr
 - User needs to process multiple files through a pipeline
 - User wants to optimize pipeline config for best accuracy
 
-## Available Pipelines
-
-### Pipeline 1: Machine State Job Pipeline
+## Machine State Classification Pipeline
 
 Classifies time-series sensor data using n-shot examples. Uses Newton to vectorize sensor windows, then a KNN classifier to predict state.
 
-**Pipeline key:** `machine-state-job-pipeline`
+**Pipeline key:** `machine-state-classification`
 
 **Available model types:**
 - `omega_1_3_surface` — surface sensor monitoring (9 channels)
@@ -51,13 +49,13 @@ DATE_TIME, BPOS, DBTM, FLWI, HDTH, HKLD, ROP, RPM, SPPA, WOB
 ```
 
 ```bash
-curl -s -X POST "$BASE_URL/jos/jobs" \
+curl -s -X POST "$BASE_URL/batch/jobs" \
   -H "Authorization: Bearer $ATAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "drilling-classification",
     "pipeline_type": "batch",
-    "pipeline_key": "machine-state-job-pipeline",
+    "pipeline_key": "machine-state-classification",
     "inputs": {
       "worker.inference": [{"file_id": "volve_inference.csv"}],
       "worker.n_shots": [
@@ -71,9 +69,12 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
         "config": {
           "model_type": "omega_1_3_surface",
           "batch_size": 8,
-          "timestamp_column": "DATE_TIME",
-          "data_columns": ["BPOS","DBTM","FLWI","HDTH","HKLD","ROP","RPM","SPPA","WOB"],
-          "reader_config": {"window_size": 64, "step_size": 1},
+          "reader_config": {
+            "data_columns": ["BPOS","DBTM","FLWI","HDTH","HKLD","ROP","RPM","SPPA","WOB"],
+            "timestamp_column": "DATE_TIME",
+            "window_size": 64,
+            "step_size": 1
+          },
           "classifier_config": {"n_neighbors": 5, "metric": "euclidean", "weights": "uniform"},
           "flush_every_n_iteration": 1000
         }
@@ -82,68 +83,12 @@ curl -s -X POST "$BASE_URL/jos/jobs" \
   }'
 ```
 
-### Pipeline 2: Nano Inference Pipeline
-
-Text generation inference using Newton's language capabilities on input data files.
-
-**Pipeline key:** `nano-inference-pipeline`
-
-**Input ports:**
-- `worker.data` — JSONL files (not raw CSV — raw CSV causes `"error": "parse error"`)
-
-**Input format:** Each line must be a JSON object:
-```json
-{"system": "You are a drilling analyst.", "instruction": "Describe the rig state.", "prompt": "BPOS: 10.02, DBTM: 259.92, ..."}
-```
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `system` | string | No | System prompt (include sensor definitions for better results) |
-| `instruction` | string | No | Task instruction |
-| `prompt` | string | No | User prompt / input text |
-| `inputs` | array | No | Multimodal inputs (images, video) |
-
-**Important:** The base Newton model without fine-tuning may not interpret sensor abbreviations correctly. Include sensor definitions in the `system` prompt. For classification tasks, use Machine State Pipeline instead.
-
-```bash
-curl -s -X POST "$BASE_URL/jos/jobs" \
-  -H "Authorization: Bearer $ATAI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "nano-inference",
-    "pipeline_type": "batch",
-    "pipeline_key": "nano-inference-pipeline",
-    "inputs": {
-      "worker.data": [{"file_id": "volve_nano_200.jsonl"}]
-    },
-    "parameters": {
-      "worker": {
-        "parallelism": 1,
-        "config": {
-          "generation": {
-            "do_sample": true,
-            "max_new_tokens": 256,
-            "repetition_penalty": 1,
-            "temperature": 0.7,
-            "top_k": 20,
-            "top_p": 0.8
-          }
-        }
-      }
-    }
-  }'
-```
-
-**Nano Inference limitations:**
-- Large files (millions of rows) will timeout — keep batches to 200-1000 rows
-- Output format: `{"line_index": 0, "prediction": "Based on the readings..."}`
-
 ## Monitoring Jobs
 
 ### Check Status
 
 ```bash
-curl -s "$BASE_URL/jos/jobs/$JOB_ID" \
+curl -s "$BASE_URL/batch/jobs/$JOB_ID" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 ```
 
@@ -152,7 +97,7 @@ Status lifecycle: `PENDING` → `RUNNING` → `COMPLETED` / `FAILED` / `CANCELLE
 ### View Events/Logs
 
 ```bash
-curl -s "$BASE_URL/jos/jobs/$JOB_ID/events" \
+curl -s "$BASE_URL/batch/jobs/$JOB_ID/events" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 ```
 
@@ -160,7 +105,7 @@ curl -s "$BASE_URL/jos/jobs/$JOB_ID/events" \
 
 ```bash
 # List output artifacts (paginated, presigned S3 URLs, 1-hour expiry)
-curl -s "$BASE_URL/jos/jobs/$JOB_ID/outputs?limit=50&offset=0" \
+curl -s "$BASE_URL/batch/jobs/$JOB_ID/outputs?limit=50&offset=0" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 
 # Download artifact (no auth needed — signature is in the URL)
@@ -177,7 +122,7 @@ DATE_TIME,Prediction
 ### List All Jobs
 
 ```bash
-curl -s "$BASE_URL/jos/jobs?limit=10&offset=0" \
+curl -s "$BASE_URL/batch/jobs?limit=10&offset=0" \
   -H "Authorization: Bearer $ATAI_API_KEY"
 ```
 
@@ -192,21 +137,21 @@ The Machine State pipeline has several tunable hyperparameters. Use grid search 
 | `metric` | euclidean, cosine, manhattan | Distance metric |
 | `weights` | uniform, distance | KNN weight function |
 
-See `optimize_config.py` in [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for an automated grid search script.
+See `optimize_config.py` in [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) for an automated grid search script.
 
 ## API Reference
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/v0.5/jos/jobs` | POST | Create a batch job |
-| `/v0.5/jos/jobs` | GET | List all jobs |
-| `/v0.5/jos/jobs/{job_id}` | GET | Get job status |
-| `/v0.5/jos/jobs/{job_id}/events` | GET | Get job events/logs |
-| `/v0.5/jos/jobs/{job_id}/outputs` | GET | List output artifacts (paginated, presigned URLs) |
+| `/v0.5/batch/jobs` | POST | Create a batch job |
+| `/v0.5/batch/jobs` | GET | List all jobs |
+| `/v0.5/batch/jobs/{job_id}` | GET | Get job status |
+| `/v0.5/batch/jobs/{job_id}/events` | GET | Get job events/logs |
+| `/v0.5/batch/jobs/{job_id}/outputs` | GET | List output artifacts (paginated, presigned URLs) |
 
 ## Fine-Tuning (TBD)
 
-Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet available. It requires JSONL-formatted training data. See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for the JSONL converter.
+Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet available. It requires JSONL-formatted training data. See [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) for the JSONL converter.
 
 ## Common Errors
 
@@ -215,8 +160,8 @@ Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet availabl
 | `shape '[-1, 6912]' is invalid for input of size N` | Wrong number of `data_columns` | Must be exactly 9 columns |
 | `n_neighbors must be <= number of samples in index` | N-shot files too small for `window_size` | Increase n-shot rows or decrease `window_size` |
 | `could not parse as dtype i64` | Mixed int/float values in CSV | Ensure all sensor values are formatted as floats |
-| `"error": "parse error"` (Nano) | Raw CSV sent to Nano pipeline | Must use JSONL format with system/instruction/prompt |
 | `Failed to resolve file inputs` | File not uploaded | Upload file first via Files API |
+| `Pipeline 'X' has no active versions` | Pipeline not deployed in this environment | Verify the pipeline_key is deployed (Machine State = `machine-state-classification`) |
 
 ## Best Practices
 
@@ -230,4 +175,4 @@ Fine-tuning via `POST /v0.5/internal/experiment/runner/jobs` is not yet availabl
 
 ## Example Code
 
-See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for full Python, shell, and curl implementations including data preparation, config optimization, and evaluation scripts.
+See [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) for full Python, shell, and curl implementations including data preparation, config optimization, and evaluation scripts.

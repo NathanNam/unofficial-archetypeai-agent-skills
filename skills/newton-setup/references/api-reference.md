@@ -218,13 +218,13 @@ POST /files/uploads/{upload_id}/abort
 
 #### Create Batch Job
 ```
-POST /jos/jobs
+POST /batch/jobs
 Content-Type: application/json
 
 Body: {
   "name": "string",
   "pipeline_type": "batch",
-  "pipeline_key": "machine-state-job-pipeline" | "nano-inference-pipeline",
+  "pipeline_key": "machine-state-classification",
   "inputs": { "<port_name>": [{ "file_id": "string", "metadata": {} }] },
   "parameters": { "worker": { "parallelism": integer, "config": { ... } } }
 }
@@ -233,24 +233,24 @@ Response: { "id": "job_...", "status": "PENDING", ... }
 
 #### List Jobs
 ```
-GET /jos/jobs?limit=10&offset=0
+GET /batch/jobs?limit=10&offset=0
 ```
 
 #### Get Job Status
 ```
-GET /jos/jobs/{job_id}
+GET /batch/jobs/{job_id}
 Response: { "id": "string", "status": "PENDING|RUNNING|COMPLETED|FAILED|CANCELLED", ... }
 ```
 
 #### Get Job Events
 ```
-GET /jos/jobs/{job_id}/events
+GET /batch/jobs/{job_id}/events
 Response: { "events": [{ "level": "INFO|ERROR", "message": "string", "created_at": "string" }] }
 ```
 
 #### Get Job Outputs
 ```
-GET /jos/jobs/{job_id}/outputs?limit=50&offset=0
+GET /batch/jobs/{job_id}/outputs?limit=50&offset=0
 
 Response: {
   "total": integer,
@@ -273,7 +273,7 @@ Response: {
 
 ## Known Pipeline Keys
 
-| Pipeline | Key | Type | Input Ports |
-|----------|-----|------|-------------|
-| Machine State | `machine-state-job-pipeline` | batch | `worker.inference`, `worker.n_shots` |
-| Nano Inference | `nano-inference-pipeline` | batch | `worker.data` |
+| Pipeline | Key | Type | Input Ports | Status |
+|----------|-----|------|-------------|--------|
+| Machine State Classification | `machine-state-classification` | batch | `worker.inference`, `worker.n_shots` | Active on prod (v1.1.0) |
+| Nano Inference | `nano-inference-pipeline` | batch | `worker.data` | No active prod version |
