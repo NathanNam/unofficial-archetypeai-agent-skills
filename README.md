@@ -12,6 +12,7 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 |-------|-------------|
 | [newton-setup](skills/newton-setup/) | Configure Newton API access, environment setup, and SDK initialization |
 | [newton-machine-state](skills/newton-machine-state/) | N-shot classification of sensor data using the Machine State Lens |
+| [newton-query-prompting](skills/newton-query-prompting/) | Prompt-engineering patterns for the `/query` text-reasoning endpoint (structured output, topology validation, contamination avoidance) |
 | [newton-activity-monitor](skills/newton-activity-monitor/) | Vision-based analysis and Q&A using the Activity Monitor Lens |
 | [newton-sensor-streaming](skills/newton-sensor-streaming/) | Real-time sensor data ingestion patterns (BLE, OBD2, serial, etc.) |
 | [newton-batch-upload](skills/newton-batch-upload/) | Upload large files (> 255 MB) via multipart presigned URLs |
@@ -32,12 +33,13 @@ cp -r skills/* your-project/.claude/skills/
 ### Invoke a Skill
 
 ```
-/newton-setup            # Set up API access
-/newton-machine-state    # Build a classification pipeline
-/newton-activity-monitor # Analyze visual data
-/newton-sensor-streaming # Connect hardware sensors
-/newton-batch-upload     # Upload large files (> 255 MB)
-/newton-batch-inference  # Run batch processing jobs
+/newton-setup             # Set up API access
+/newton-machine-state     # Build a classification pipeline
+/newton-query-prompting   # Engineer /query prompts for structured output
+/newton-activity-monitor  # Analyze visual data
+/newton-sensor-streaming  # Connect hardware sensors
+/newton-batch-upload      # Upload large files (> 255 MB)
+/newton-batch-inference   # Run batch processing jobs
 ```
 
 ## Architecture
@@ -73,7 +75,8 @@ These projects demonstrate the patterns covered by these skills:
 - [newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) — Real-time USGS earthquake analysis + Newton text reasoning (direct query API)
 - [newton-grid-demo](https://github.com/archetypeai/newton-grid-demo) — California power grid monitoring via CAISO supply/demand data + Newton text reasoning
 - [newton-drilling-demo](https://github.com/archetypeai/newton-drilling-demo) — Drilling state classification from 14 North Sea wells + Newton Machine State Lens (SSE streaming)
-- [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Nano Inference)
+- [newton-swat-demo](https://github.com/archetypeai/newton-swat-demo) — 6-stage water treatment plant anomaly dashboard with parallel per-stage Machine State Lens sessions + `/query`-generated operator suggestions (reference implementation for both `newton-machine-state` parallel-subsystem pattern and `newton-query-prompting`)
+- [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Activity Detection)
 
 ## API Base URL
 

@@ -276,4 +276,4 @@ Response: {
 | Pipeline | Key | Type | Input Ports | Status |
 |----------|-----|------|-------------|--------|
 | Machine State Classification | `machine-state-classification` | batch | `worker.inference`, `worker.n_shots` | Active on prod (v1.1.0) |
-| Nano Inference | `nano-inference-pipeline` | batch | `worker.data` | No active prod version |
+| Activity Detection | `nano-inference-pipeline` | batch | `worker.data` | No active prod version |
