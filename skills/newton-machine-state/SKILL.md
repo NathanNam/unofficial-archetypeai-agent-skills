@@ -247,6 +247,46 @@ For real-time applications, implement a server-side singleton that:
 
 See [references/stream-manager-pattern.md](references/stream-manager-pattern.md) for the full implementation pattern.
 
+## Parallel Per-Subsystem Sessions
+
+A single shared session produces one verdict for the whole system. If you need to know *which* subsystem saw the anomaly — to route alerts, rank severity, or drive per-component UI — run **N parallel sessions, one per subsystem, each over a column subset of the same wide CSV**.
+
+Canonical shape: the subsystems share the same n-shot focus files (`swat_normal.csv` / `swat_attack.csv`) but each lens registers with a different `data_columns` filter — P1's session sees `FIT101/LIT101/MV101/P101`, P3's session sees its nine UF columns, and so on. Six classifiers, one problem, six per-subsystem verdicts per window.
+
+```js
+// Per-stage lens register — same n-shot files, different column subset
+{
+  lens_name: `swat-stage-${stageId}-${ts}`,
+  model_pipeline: [{ processor_name: 'lens_timeseries_state_processor' }],
+  model_parameters: {
+    model_name: 'OmegaEncoder',
+    model_version: 'OmegaEncoder::omega_embeddings_01',
+    buffer_size: 30,
+    input_n_shot: { NORMAL: normalFileId, ATTACK: attackFileId },
+    csv_configs: {
+      data_columns: STAGE_COLUMNS[stageId],  // <-- only this stage's sensors
+      window_size: 30,
+      step_size: 30
+    },
+    knn_configs: { n_neighbors: 3, metric: 'euclidean' }
+  }
+}
+```
+
+Streaming per window fans out too — transpose the current window to channel-first (`[[col1 values], [col2 values], ...]`, not row-major) and `POST /lens/sessions/events/process` to each session in parallel. On the consumer side the browser opens N concurrent `EventSource` connections (one per session) and bucket-sorts incoming `inference.result` events by session ID to update per-subsystem state.
+
+**When to prefer N parallel sessions over 1 shared session:**
+- You need component-level verdicts (to color a plant schematic, page a specific oncall rotation, surface per-area suggestions)
+- Sensors are naturally grouped by subsystem, with limited cross-group interaction
+- 6× the session-create calls at startup is acceptable (`Promise.all` makes it ~1.5s instead of 9s sequential)
+
+**When the singleton pattern is better:**
+- You only care about a single "is the system OK" verdict
+- Subsystems are tightly coupled and the anomaly is usually observable from any sensor
+- Session count matters for cost (most Newton pricing bills by inference count, not session count — but verify for your account)
+
+See [references/parallel-subsystem-pattern.md](references/parallel-subsystem-pattern.md) for the full pattern, including browser-side cleanup on tab close.
+
 ## Key Parameters
 
 | Parameter | Default | Description |
@@ -265,3 +305,6 @@ See [references/stream-manager-pattern.md](references/stream-manager-pattern.md)
 - **Always connect SSE before setting input** — otherwise results may be missed
 - **Implement early termination** — avoids 60-80s idle wait per query
 - **Graceful degradation** — apps should work without Newton; check availability first
+- **Clean up on tab close** (browser-side sessions) — fire `DELETE /lens/sessions/destroy` from a `pagehide` handler with `fetch(..., { keepalive: true })` so orphaned sessions don't accumulate on refresh/close. `navigator.sendBeacon` works too but only sends POSTs.
+- **Clean stale lenses on startup** — before registering a new lens, `GET /lens/metadata` and delete any old ones matching your name prefix. Lens registrations persist across sessions and accumulate.
+- **Channel-first transpose** — Machine State Lens expects streams as `[[col1 values], [col2 values], ...]`, not row-major. If classifications look random, check this first.
