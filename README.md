@@ -1,8 +1,21 @@
-# Unofficial Archetype AI Agent Skills
+# ⚠️ This repository has moved
 
-> **Disclaimer:** This is an unofficial, community-maintained project. It is not affiliated with, endorsed by, or maintained by [Archetype AI](https://www.archetypeai.dev/).
+**Use [archetypeai/archetypeai-agent-skills](https://github.com/archetypeai/archetypeai-agent-skills) instead.**
 
-Agent skills for building applications with [Archetype AI's Newton](https://www.archetypeai.dev/) — a real-time sensor intelligence platform that understands physical world data through foundation models.
+This repo started as a personal/unofficial project before I joined Archetype AI. The skills now live under the Archetype AI org as the canonical, maintained location. New skills, fixes, and improvements go there. This repo is preserved for history but will not receive further updates.
+
+To install from the new location:
+
+```bash
+git clone https://github.com/archetypeai/archetypeai-agent-skills.git
+cp -r archetypeai-agent-skills/skills/* ~/.claude/skills/
+```
+
+---
+
+# Unofficial Archetype AI Agent Skills (archived)
+
+Agent skills for building applications with [Archetype AI's Newton](https://www.archetypeai.io/) — a real-time sensor intelligence platform that understands physical world data through foundation models.
 
 Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 
