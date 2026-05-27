@@ -24,11 +24,16 @@ Analyze visual data and answer natural language questions using Newton's 2B-para
 - User wants to monitor a camera feed or visual stream
 - User references the "Newton Chat" or "Ask Newton" feature pattern
 
-## Lens ID
+## Lens IDs
 
-```
-lns-fd669361822b07e2-bc608aa3fdf8b4f9
-```
+Two Activity Monitor lenses are mounted on prod, each pinned to a different Newton C model checkpoint. Pick by model version — the orchestration and parameter schema are identical between them.
+
+| Lens ID | Pinned `model_version` | Use when |
+|---|---|---|
+| **`lns-1286e5d1d1b84a77-af311d579cc14869`** | `Newton::c2_5_8b_260413b723a9ab` (C 2.5, 8B) | **Default for new projects.** Newer, larger Newton C — substantially better structured-output compliance and richer descriptions (see the same model's improvement on text reasoning in [`newton-query-prompting`](../newton-query-prompting/SKILL.md)). |
+| `lns-fd669361822b07e2-bc608aa3fdf8b4f9` | `Newton::c2_4_7b_251215a172f6d7` (C 2.4, 4.7B) | Older lens. Faster per-call but lower-quality output. Keep for backwards compatibility with existing apps that hard-coded this lens_id. |
+
+Both lenses pin `lens_camera_processor`, `temporal_focus: 5`, `camera_buffer_size: 5`, `max_new_tokens: 512` by default. You override `focus` and `instruction` per session — see [`newton-models`](../newton-models/SKILL.md) for the full mounted-config dump and how lenses fit into the wider model catalog.
 
 ## Core Concept
 
@@ -121,12 +126,14 @@ async function uploadVideo(mp4Buffer: Buffer): Promise<string> {
 ### Step 4: Create Session and Configure
 
 ```typescript
-// Create session
+// Create session — use the C 2.5 lens for new work. Swap to the C 2.4
+// lens_id (lns-fd669361822b07e2-bc608aa3fdf8b4f9) only if you need
+// backwards compat with an app that hard-coded it.
 const createResponse = await newtonFetch("/lens/sessions/create", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    lens_id: "lns-fd669361822b07e2-bc608aa3fdf8b4f9",
+    lens_id: "lns-1286e5d1d1b84a77-af311d579cc14869",
   }),
 });
 const { session_id } = await createResponse.json();
@@ -271,3 +278,7 @@ Capture Screenshot → Convert to MP4 → Upload → Create Session → Configur
 - **Set output before input** — avoids a race condition where results are lost
 - **Clean up files** — delete uploaded videos after use to avoid storage accumulation
 - **ffmpeg dependency** — ensure ffmpeg is available in the server environment
+
+## Building a frontend on top of this
+
+If you're wrapping the Activity Monitor Lens in a React/Svelte/etc. UI — vision-grounded chat, chart-reading dashboard, camera/screenshot Q&A panel — **read [`DESIGN.md`](../../DESIGN.md) at the root of this repo before writing any CSS**. The Archetype design system (Tailwind v4 + `@archetypeai/ds-lib-tokens` + Geist sans/mono + OKLCH palette + dark-first) is the expected visual language for these demos. [`archetypeai-traffic-demo`](https://github.com/archetypeai/archetypeai-traffic-demo) is the closest reference for vision-on-stream UIs; [`archetypeai-swat-demo`](https://github.com/archetypeai/archetypeai-swat-demo) and [`archetypeai-wifi-demo`](https://github.com/archetypeai/archetypeai-wifi-demo) show the canonical Menubar / Card / Badge (`good` / `warning` / `critical`) layout with mono numeric readouts and sharp 2px radii. Setting this up at the start is much cheaper than retrofitting later.

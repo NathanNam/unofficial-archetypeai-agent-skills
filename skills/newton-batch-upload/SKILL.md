@@ -7,7 +7,7 @@ description: >
   or fine-tuning. This skill covers the 3-step presigned URL flow: initiate,
   upload parts to S3, and complete.
   Do NOT use for files under 255 MB (use simple POST /files instead).
-  Do NOT use for creating batch jobs (use newton-batch-inference).
+  Do NOT use for creating batch jobs (use newton-machine-state-batch).
 ---
 
 # Newton Batch Upload
@@ -146,4 +146,4 @@ curl -s -X POST "$BASE_URL/files/uploads/{upload_id}/abort" \
 
 ## Example Code
 
-See [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) for full Python, shell, and curl implementations.
+See [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) for full Python, shell, and curl implementations.

@@ -6,13 +6,13 @@ Archetype AI's design system is built for **Physical AI interfaces** — dashboa
 
 The foundation is a near-black background (`oklch(0.141 0.005 285.823)`) with light foreground text (`oklch(0.985 0 0)`), creating a high-contrast canvas where data visualizations, status indicators, and sensor readouts command attention. Cards float on a slightly lighter surface (`oklch(0.21 0.006 285.885)`) with `10%` white borders that create subtle depth without distraction.
 
-Typography uses **PP Neue Montreal** — a geometric neo-grotesque sans-serif — paired with **PP Neue Montreal Mono** for technical data. The mono font appears on badges, card headers, numeric readouts, and status labels — never on body text. Headings are set in normal weight (400) with tight tracking, giving them an understated, engineering-grade quality rather than marketing boldness.
+Typography uses **Geist** — Vercel's open-source geometric sans-serif — paired with **Geist Mono** for technical data. The mono font appears on badges, card headers, numeric readouts, and status labels — never on body text. Headings are set in normal weight (400) with tight tracking, giving them an understated, engineering-grade quality rather than marketing boldness.
 
 The brand's color palette is deliberately scientific: **Baby Blue** for neutral states, **Screen Green** for healthy/good, **Sunshine Yellow** for warnings, and **Fire Red** for critical alerts. A secondary palette of **Cool Purple**, **Energy Pink**, **Tangerine**, and **Lime** provides chart series colors. These are OKLCH-native, perceptually uniform, and designed for data legibility across light and dark modes.
 
 **Key Characteristics:**
 - Dark-first design with near-black backgrounds and high-contrast text
-- PP Neue Montreal (sans) + PP Neue Montreal Mono (mono) type pairing
+- Geist (sans) + Geist Mono (mono) type pairing
 - OKLCH color system — perceptually uniform across all palettes
 - Semantic status colors: green (good), yellow (warning), red (critical), blue (neutral)
 - Data-dense layouts: full-viewport dashboards, no scrolling, 2×2/3×2 panel grids
@@ -71,41 +71,40 @@ The brand's color palette is deliberately scientific: **Baby Blue** for neutral 
 
 ```css
 @import "@archetypeai/ds-lib-tokens/theme.css";
-@import "@archetypeai/ds-lib-tokens/fonts.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 @import "tailwindcss";
 @import "tw-animate-css";
 ```
 
 Order matters — tokens and fonts must come before Tailwind.
 
+> Note for Agent Skills demos: do **not** import `@archetypeai/ds-lib-tokens/fonts.css`. That file expects PP Neue Montreal font files to be copy-pasted into the app — a commercial license we deliberately avoid in public demos. Pull Geist directly from `@fontsource-variable/geist*` instead until the tokens package is updated to ship Geist itself.
+
 ### Font Families
-- **Sans**: `PP Neue Montreal`, fallbacks: `system-ui, -apple-system, sans-serif`
-- **Mono**: `PP Neue Montreal Mono`, fallbacks: `Courier New, monospace`
+- **Sans**: `Geist Variable`, fallbacks: `system-ui, -apple-system, sans-serif`
+- **Mono**: `Geist Mono Variable`, fallbacks: `ui-monospace, SFMono-Regular, Menlo, monospace`
 
-### Font Files
-Place font files in `static/fonts/`:
-- Sans: `PPNeueMontreal-{Thin,Light,Regular,Book,Medium,Bold,Italic,ThinItalic,BoldItalic}.ttf`
-- Mono: `PPNeueMontrealMono-{Thin,Regular,Book,Medium,Bold,RegularItalic}.otf`
-
-The `fonts.css` import references these at `/fonts/PPNeueMontreal-*.ttf` and `/fonts/PPNeueMontrealMono-*.otf`.
+Use **Geist Font from Vercel** — official source: [vercel.com/font](https://vercel.com/font#get). Geist is open-source under the SIL Open Font License, so it's safe to bundle in public repos. Install via `npm i @fontsource-variable/geist @fontsource-variable/geist-mono` for framework-agnostic projects (this is the path Vercel themselves recommend outside Next.js); Next.js apps can use Vercel's official `geist` package directly. If the font fails to load, the fallback stack (`system-ui` for sans, `ui-monospace` for mono) renders the UI without licensing risk and without breaking the visual hierarchy.
 
 ### Font Weights Available
-- **Sans**: 100 (Thin), 300 (Light), 400 (Regular/Book), 500 (Medium), 700 (Bold)
-- **Mono**: 100 (Thin), 400 (Regular/Book), 500 (Medium), 700 (Bold)
+Geist supports the full 100–900 weight axis (variable). Named cuts:
+- **Sans**: 100 (Thin), 200 (UltraLight), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Black), 900 (UltraBlack)
+- **Mono**: 100 (Thin), 200 (UltraLight), 300 (Light), 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (Black), 900 (UltraBlack)
 
 ### Heading Hierarchy
 
 | Element | Font | Size | Weight | Line Height | Tracking | Transform | Notes |
 |---------|------|------|--------|-------------|----------|-----------|-------|
-| `h1` | PP Neue Montreal | 2.25rem (36px) | 400 (normal) | normal | tight | capitalize | Primary page title |
-| `h2` | PP Neue Montreal | 1.875rem (30px) | 400 (normal) | tight | tight | — | Section heading |
-| `h3` | PP Neue Montreal | 1.5rem (24px) | 400 (normal) | normal | tight | — | Subsection heading |
-| `h4` | PP Neue Montreal | 1.25rem (20px) | 400 (normal) | tight | tight | — | Muted foreground color |
-| `h5` | PP Neue Montreal | 1.125rem (18px) | 400 (normal) | tight | tight | uppercase | Muted, uppercase label |
-| `h6` | PP Neue Montreal | 1rem (16px) | 400 (normal) | tight | tight | — | Muted smallest heading |
-| `p` | PP Neue Montreal | 0.875rem (14px) | 400 | tight | normal | — | Body text |
-| `small` | PP Neue Montreal | 0.75rem (12px) | 400 | tight | normal | — | Captions, fine print |
-| `code` | PP Neue Montreal Mono | 0.875rem (14px) | 400 | relaxed | normal | — | Inline code |
+| `h1` | Geist | 2.25rem (36px) | 400 (normal) | normal | tight | capitalize | Primary page title |
+| `h2` | Geist | 1.875rem (30px) | 400 (normal) | tight | tight | — | Section heading |
+| `h3` | Geist | 1.5rem (24px) | 400 (normal) | normal | tight | — | Subsection heading |
+| `h4` | Geist | 1.25rem (20px) | 400 (normal) | tight | tight | — | Muted foreground color |
+| `h5` | Geist | 1.125rem (18px) | 400 (normal) | tight | tight | uppercase | Muted, uppercase label |
+| `h6` | Geist | 1rem (16px) | 400 (normal) | tight | tight | — | Muted smallest heading |
+| `p` | Geist | 0.875rem (14px) | 400 | tight | normal | — | Body text |
+| `small` | Geist | 0.75rem (12px) | 400 | tight | normal | — | Captions, fine print |
+| `code` | Geist Mono | 0.875rem (14px) | 400 | relaxed | normal | — | Inline code |
 
 ### Mono Font Usage (Critical Convention)
 The mono font (`font-mono`) is used deliberately on specific UI elements — never as body text:
@@ -195,12 +194,57 @@ The mono font (`font-mono`) is used deliberately on specific UI elements — nev
 - Focus: `ring-ring/50`, 3px ring
 - Invalid: `aria-invalid:border-destructive`, `aria-invalid:ring-destructive/20`
 
+### PlaybackBar (replay / time-scrub control)
+
+Used in any demo that replays a time-indexed dataset — `archetypeai-swat-demo` (10× SWaT replay), `archetypeai-wifi-demo` (per-window walkthrough), `archetypeai-obd2-demo` (1×–20× session playback). A horizontal strip immediately under the Menubar (`border-b px-4 py-2`), with these elements left-to-right:
+
+- **Play / pause icon button** — `Button variant="outline" size="icon"`, swaps a `Play` and `Pause` Lucide icon
+- **Reset icon button** — same `outline icon`, `RotateCcw` Lucide icon
+- **Time readout** — mono, tabular nums, e.g. `52:40 / 52:40`. `text-muted-foreground` with the separator slash at `opacity-50`.
+- **Scrubber** — `<input type="range">` (`flex-1`) styled with a `border`-colored track and a `bg-foreground` circular thumb ringed by 2px `bg-background`
+- **Speed selector** — segmented group of buttons inside a 1px `border` container, mono uppercase labels (`1× 2× 3× 5× 10× 20×`), active state uses `bg-accent` + `text-foreground`, rest uses `text-muted-foreground`
+
+Separating the bar from the panel grid (own row, own border) keeps temporal control out of the data area and makes it obvious it acts globally on every panel.
+
 ### Icons (Lucide)
 - Default stroke width: 1 (`--atai-icon-stroke-default`)
 - Interactive: 1.25 (`--atai-icon-stroke-interactive`)
 - Status indicators: 1.5 (`--atai-icon-stroke-status`)
 - Emphasis/action: 2 (`--atai-icon-stroke-emphasis`)
 - Sizing: `size-4` (16px) in buttons, `size-6` (24px) in card headers
+
+### Schematic Equipment Icons (custom SVG)
+
+For domain hardware that doesn't exist in Lucide — tanks, ultrafiltration units, reverse-osmosis stages, drilling rigs, pumps, dosing skids — use hand-drawn schematic SVGs rather than reaching for a stock library. The convention is consistent across `archetypeai-swat-demo`, `archetypeai-drilling-demo`, and the other Newton demos that visualize physical equipment:
+
+```svelte
+<svg
+  viewBox="0 0 120 40"
+  class="text-muted-foreground h-10 w-full"
+  preserveAspectRatio="xMidYMid meet"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.25"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <!-- equipment paths, e.g. raw-water tank with outflow pipe: -->
+  <rect x="18" y="8" width="36" height="26" rx="1" />
+  <path d="M 22 18 Q 27 15 32 18 T 42 18 T 50 18" stroke-width="0.75" />
+  <line x1="54" y1="26" x2="110" y2="26" />
+  <path d="M 106 22 L 110 26 L 106 30" />
+</svg>
+```
+
+Conventions:
+- **viewBox**: `0 0 120 40` (3:1) for a stage / process unit; `0 0 24 24` for inline icons.
+- **Stroke**: `currentColor` with `stroke-width="1.25"` matching the interactive icon weight from Lucide. Thinner accents (water surface, dotted flow) drop to `0.75`.
+- **Caps & joins**: always `round`.
+- **Fill**: `none` — equipment is line-art, not filled shapes. The dark canvas does the visual work.
+- **Color**: `text-muted-foreground` by default; switch to `text-atai-critical/70` (or another semantic status) when the stage is anomalous so the schematic reads as a status surface, not just decoration.
+- **Aspect**: `preserveAspectRatio="xMidYMid meet"` so the schematic centers cleanly when the container width changes.
+
+If you have a vector source from the customer (e.g. a P&ID excerpt) you can adapt that into this style by stripping fills, normalizing strokes to 1.25, and snapping the geometry to a 120×40 grid.
 
 ## 5. Layout Principles
 
@@ -218,11 +262,150 @@ The mono font (`font-mono`) is used deliberately on specific UI elements — nev
 - Content: `grid grid-cols-2 grid-rows-2 gap-4 p-4` — 2×2 panel grid
 - Each panel: `max-h-full` with internal scroll via `ScrollArea`
 
+### Split-pane Layout (Sensor / Analysis Pattern)
+
+When the demo has a clear "raw input | model interpretation" duality — timeline of sensor values on one side, model output on the other — use a horizontal split instead of the 2×2 grid:
+
+- Outer grid: `grid-rows-[auto_auto_1fr]` — Menubar / PlaybackBar / content
+- Content grid: `grid-cols-[240px_1fr_1fr] gap-3 p-3` — sidebar (session list) + left pane (raw signals) + right pane (analysis)
+- Each pane handles its own internal scroll; the page never scrolls
+- Both data panes are visually weighted equally (`1fr` each) — neither side is "subordinate"
+
+`archetypeai-obd2-demo` uses this for raw OBD-II playback on the left and the Omega embedding trajectory on the right, time-synced through a shared scrubber. The pattern generalizes to any "compare what the sensors saw against what the model concluded" case.
+
 ### Menubar
-- Fixed header: `border-b px-4 py-2`
-- Left: Archetype AI logo + optional partner branding (mono, uppercase)
-- Right: action buttons + dark mode toggle
-- Flexbox: `flex items-center justify-between`
+
+Identical across `archetypeai-swat-demo`, `archetypeai-drilling-demo`, `archetypeai-wifi-demo`, `archetypeai-grid-demo`, `archetypeai-wildfire-demo` — treat this as the canonical pattern, copy verbatim rather than re-inventing:
+
+```svelte
+<header class="border-border flex items-center justify-between border-b px-4 py-2">
+  <div class="flex items-center gap-3">
+    <Logo class="h-6" />
+    <SeparatorIcon class="text-muted-foreground size-6" strokeWidth={1} />
+    {@render partnerLogo()}    <!-- or a Badge variant="outline" placeholder -->
+  </div>
+  <div class="flex items-center gap-2">
+    {@render children()}        <!-- action buttons, status pills, etc. -->
+    <Button variant="outline" size="icon" onclick={toggleDark}>
+      {#if darkMode}<SunIcon />{:else}<MoonIcon />{/if}
+    </Button>
+  </div>
+</header>
+```
+
+Key details:
+- Full-bleed (`border-b`, no max-width container) — the menubar always spans the viewport.
+- **Wordmark asset:** [`assets/archetype-wordmark.svg`](../../assets/archetype-wordmark.svg) in this repo (single source of truth — raw URL: `https://raw.githubusercontent.com/archetypeai/archetypeai-agent-skills/main/assets/archetype-wordmark.svg`). Single 190×35 `viewBox`, one `fill="currentColor"` path (~14 KB). The path is achromatic — it renders in whatever `color` the *surrounding* element resolves to, so the same file works on both backgrounds (in dark mode, give it `text-foreground` ≈ near-white; in light mode, `text-foreground` ≈ near-black; the wordmark flips automatically with the theme). The seven Newton demos in this catalogue (swat, drilling, wifi, grid, wildfire, traffic, earthquake) each hand-inlined this same SVG in their own `src/lib/components/ui/patterns/logo/logo.svelte` — those copies are byte-identical, but the version in `assets/` is now the canonical source, so future demos should reference *that* file rather than copy from a sibling demo. `@archetypeai/ds-lib-tokens` ships theme/token CSS but does **not** include the wordmark asset.
+
+  **Inlining is mandatory — `<img>` and `background-image` won't work.** The SVG's `fill="currentColor"` only resolves against an enclosing element's CSS `color` property, which `<img src="…">` and `background-image: url(…)` opaquely ignore. Both render as nothing visible on dark and incorrect color on light. Drop the `<svg>` element directly into the page markup; framework choice is irrelevant as long as the SVG ends up in the DOM.
+
+  Recipes for each common framework:
+
+  ```jsx
+  // React / Next.js — import as a component (SVGR / @svgr/webpack) or paste inline.
+  // SVGR turns the file into a JSX component with no runtime overhead.
+  import Wordmark from "@/assets/archetype-wordmark.svg?react";
+  <span className="text-foreground inline-flex"><Wordmark className="h-6 w-auto" /></span>
+  ```
+
+  ```svelte
+  <!-- Svelte / SvelteKit — paste the <svg> verbatim into a logo.svelte component. -->
+  <!-- See any of the existing demos: src/lib/components/ui/patterns/logo/logo.svelte -->
+  <span class="text-foreground inline-flex">
+    <svg viewBox="0 0 190 35" class="h-6 w-auto" fill="none">…</svg>
+  </span>
+  ```
+
+  ```html
+  <!-- Flask / Jinja / plain HTML — copy assets/archetype-wordmark.svg into your -->
+  <!-- templates/ directory as _wordmark.svg, then include it inline.            -->
+  <span class="wordmark" aria-label="Archetype AI" style="color: var(--fg)">
+    {% include '_wordmark.svg' %}
+  </span>
+  ```
+
+  ```css
+  /* Vanilla CSS sizing (no Tailwind). 22–24px height matches the design system's
+     h-6 token used by the Svelte demos. */
+  .wordmark { display: inline-flex; line-height: 0; }
+  .wordmark svg { height: 22px; width: auto; display: block; }
+  ```
+
+  Add `aria-label="Archetype AI"` to the wrapping element so screen readers announce the brand — the SVG itself has no `<title>`.
+- Separator is a Lucide `Minus` icon at `strokeWidth={1}` and `size-6` — *not* a CSS divider or pipe character.
+- Partner branding goes to the right of the separator. When you don't have one, a `<Badge variant="outline">Partner Logo</Badge>` is the standard placeholder so the slot stays visible during development.
+- The dark-mode button is a `Button variant="outline" size="icon"` with Sun/Moon swap, wrapped in `document.startViewTransition` so the canvas crossfades instead of flicker-swapping.
+- Right side accepts arbitrary action content via a slot/snippet — a "Start analysis" pill, a status badge ("API READY"), a "Logout" button, etc., all to the *left* of the dark-mode toggle.
+
+### Stage / Pipeline Panel Pattern
+
+When the demo shows a multi-stage physical process (water-treatment stages, drilling-rig subsystems, manufacturing line cells), each stage gets a dedicated `BackgroundCard` laid out as a column of: **stage code + status dot + status badge → schematic SVG → mono stage name → tabular readouts → optional history strip**. The pattern is from `archetypeai-swat-demo`'s `stage-card.svelte` (P1–P6 of the water-treatment plant) and transfers wholesale to any per-subsystem dashboard.
+
+```svelte
+<BackgroundCard class="flex flex-col gap-3 p-4">
+  <header class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-muted-foreground font-mono text-sm">{stageId}</span>
+      <span class="size-2 rounded-full {tokens.dot}"></span>      <!-- status dot -->
+    </div>
+    <Badge variant="outline" class="font-mono text-xs {tokens.pill}">{tokens.label}</Badge>
+  </header>
+
+  <StageSchematic stageId={stageId} class={status === 'attack' && 'text-atai-critical/70'} />
+
+  <p class="font-mono text-sm leading-tight">{stageName}</p>
+
+  <dl class="flex flex-col gap-1 text-xs">
+    {#each columns as col}
+      <div class="flex items-baseline justify-between gap-2">
+        <dt class="text-muted-foreground font-mono">{col}</dt>
+        <dd class="font-mono">{fmt(liveRow?.[col])}</dd>
+      </div>
+    {/each}
+  </dl>
+
+  <!-- optional: recent-classifications dot strip mt-auto -->
+</BackgroundCard>
+```
+
+Composition notes:
+- The card padding is the standard `p-4`, but the *internal* gap shrinks to `gap-3` (vs `gap-6` in a generic BackgroundCard) — stage panels are intentionally denser.
+- **Stage code + dot** sit on the left; **status badge** on the right. The dot is `size-2` rounded-full filled with a semantic status token (`bg-atai-good`, `bg-atai-critical`, `bg-atai-warning`, `bg-muted`).
+- **Stage name uses mono** (`font-mono text-sm`) — this is an exception to the "mono only on technical data" rule, justified because stage names ("Raw water intake", "UV dechlorination") read more like equipment IDs than prose.
+- A dedicated `STATUS_TOKEN` map keeps dot color + pill color + label in lockstep so adding a new status (`warmup`, `pending`, `standby`, `unmonitored`, `idle`) is one record, not three.
+
+### Readout Tables (Tabular Sensor Values)
+
+The `<dl>` block inside a stage panel is the canonical "label-value" readout — used wherever you want a tight column of sensor IDs and their current values without a true table's chrome:
+
+```svelte
+<dl class="flex flex-col gap-1 text-xs">
+  <div class="flex items-baseline justify-between gap-2">
+    <dt class="text-muted-foreground font-mono">FIT101</dt>
+    <dd class="font-mono">2.42</dd>
+  </div>
+  …
+</dl>
+```
+
+Conventions:
+- Both `dt` and `dd` are `font-mono`. The label is `text-muted-foreground`; the value is full-strength `text-foreground`.
+- `text-xs` (12px) is the default density. Bump to `text-sm` only when the panel is the entire dashboard.
+- Rows are `flex items-baseline justify-between` so the decimal points roughly stack visually without a true tabular-num font feature.
+- Value formatting (from `stage-card.svelte`):
+
+  ```js
+  function fmt(v) {
+    if (v === undefined || v === null || v === '') return '—';
+    const n = parseFloat(v);
+    if (isNaN(n)) return String(v);
+    if (Math.abs(n) >= 1000) return n.toFixed(0);  // 1450
+    if (Math.abs(n) >= 10)   return n.toFixed(1);  // 521.3
+    return n.toFixed(2);                            //   2.42
+  }
+  ```
+
+  The three-tier rounding keeps the column visually balanced at any scale and gives unknowns a single em-dash glyph instead of "N/A" or "null".
 
 ### Whitespace Philosophy
 - **Data density over decoration**: Panels use every pixel — content areas flex to fill, no decorative whitespace.
@@ -310,8 +493,8 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 - Neutral: `oklch(0.794 0.091 250.497)` — Baby Blue
 
 ### Example Component Prompts
-- "Create a status dashboard card: dark background `oklch(0.21 0.006 285.885)`, 1px border at `oklch(1 0 0 / 10%)`, 2px border-radius. Header in PP Neue Montreal Mono, uppercase, tracking-wider, with a Lucide icon at stroke-width 1.25. Content area with `gap-6`."
-- "Design a status badge: rounded-md (6px radius), PP Neue Montreal Mono at 12px, uppercase. Use Screen Green `oklch(0.822 0.208 146.907)` background for healthy state with dark text."
+- "Create a status dashboard card: dark background `oklch(0.21 0.006 285.885)`, 1px border at `oklch(1 0 0 / 10%)`, 2px border-radius. Header in Geist Mono, uppercase, tracking-wider, with a Lucide icon at stroke-width 1.25. Content area with `gap-6`."
+- "Design a status badge: rounded-md (6px radius), Geist Mono at 12px, uppercase. Use Screen Green `oklch(0.822 0.208 146.907)` background for healthy state with dark text."
 - "Build a log item: 2px left color stripe (green/yellow/red by severity). Status badge with icon, mono uppercase label. Body text in muted gray `oklch(0.705 0.015 286.067)`, timestamp right-aligned in mono."
 - "Create a monitoring dashboard: full viewport, no scroll. Grid with fixed menubar top row. 2×2 panel grid with 16px gap. Each panel is a BackgroundCard with mono uppercase title and Lucide icon header."
 - "Design a line chart: use Cool Purple `oklch(0.66 0.177 299.333)` for primary series, Fire Red for secondary. Natural curve interpolation, 1.5px stroke. Dark background card container."
@@ -322,11 +505,14 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 - **ScrollArea in cards**: BackgroundCard's `CardContent` needs `min-h-0 flex-1` for `ScrollArea` to properly constrain and scroll inside flex containers.
 - **Status inference**: When classifying Newton's text responses (e.g., traffic normal vs congestion), check for negation patterns ("no visible incidents") before keyword matching to avoid false positives.
 - **Camera watermarks**: ALERTCalifornia cameras have a "UC San Diego" watermark. Newton reads it and assumes location — explicitly tell Newton to ignore watermarks in the instruction prompt.
+- **Plotly traces**: set `paper_bgcolor: "transparent"` and `plot_bgcolor: "transparent"` so the surrounding `bg-card` is visible — never hardcode a chart background color. Axis font: `family: "Geist Mono, ui-monospace, monospace"`. Grid lines in dark mode: `gridcolor: "rgba(255,255,255,0.08)"` (matches the 10% white border convention). For a single primary line series, use Cool Purple `oklch(0.66 0.177 299.333)`; for time-revealed scatters (UMAP/t-SNE/PCA over a session timeline), `colorscale: "Viridis"` with the colorbar labeled in mono.
+- **Plotly `scatter3d` doesn't honor per-marker opacity arrays** (works in 2D `scatter`, silently ignored in 3D). To reveal points progressively in 3D, slice the `x`/`y`/`z` arrays each frame (`coords.slice(0, activeIdx + 1)`) instead of toggling opacity.
+- **Plotly with React + Vite**: skip `react-plotly.js@2.x` — its CommonJS factory breaks under Vite + React 19 with `createPlotlyComponent is not a function`. Call `Plotly.react(ref.current, traces, layout)` directly inside a `useEffect` and use a `ResizeObserver` for autosizing.
 
 ### Iteration Guide
 1. Start with the dark canvas — `oklch(0.141 0.005 285.823)` background
 2. Cards step up to `oklch(0.21 0.006 285.885)` with `oklch(1 0 0 / 10%)` borders
-3. PP Neue Montreal for everything — mono variant for technical data, sans for prose
+3. Geist for everything — Geist Mono for technical data, Geist Sans for prose
 4. All headings weight 400 — hierarchy from size and color, not boldness
 5. Status colors carry meaning: green = good, yellow = warning, red = critical, blue = info
 6. 2px border-radius on everything except badges (6px) and avatars (full)
@@ -338,8 +524,12 @@ Archetype AI interfaces are primarily designed for **desktop monitoring environm
 
 | Demo | Data Type | Newton API | Repo |
 |------|-----------|------------|------|
-| **Traffic Monitor** | HLS video stream (Caltrans CCTV) | Lens session + `model.query` (vision) | [archetypeai/newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) |
-| **Wildfire Watch** | JPEG snapshots (ALERTCalifornia 1,200+ cameras) | Lens session + `model.query` (vision) | [archetypeai/newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) |
-| **Seismic Monitor** | USGS earthquake catalog (structured text) | Direct query `/v0.5/query` (reasoning) | [archetypeai/newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) |
-| **Grid Monitor** | CAISO supply/demand CSVs (5-min intervals) | Direct query `/v0.5/query` (reasoning) | [archetypeai/newton-grid-demo](https://github.com/archetypeai/newton-grid-demo) |
-| **Drilling Monitor** | Volve oil field sensor data (14 wells, North Sea) | Machine State Lens (SSE streaming) | [archetypeai/newton-drilling-demo](https://github.com/archetypeai/newton-drilling-demo) |
+| **Traffic Monitor** | HLS video stream (Caltrans CCTV) | Lens session + `model.query` (vision) | [archetypeai/archetypeai-traffic-demo](https://github.com/archetypeai/archetypeai-traffic-demo) |
+| **Wildfire Watch** | JPEG snapshots (ALERTCalifornia 1,200+ cameras) | Lens session + `model.query` (vision) | [archetypeai/archetypeai-wildfire-demo](https://github.com/archetypeai/archetypeai-wildfire-demo) |
+| **Earthquake Monitor** | USGS earthquake catalog (structured text) | Direct query `/v0.5/query` (reasoning) | [archetypeai/archetypeai-earthquake-demo](https://github.com/archetypeai/archetypeai-earthquake-demo) |
+| **Grid Monitor** | CAISO supply/demand CSVs (5-min intervals) | Direct query `/v0.5/query` (reasoning) | [archetypeai/archetypeai-grid-demo](https://github.com/archetypeai/archetypeai-grid-demo) |
+| **Drilling Monitor** | Volve oil field sensor data (14 wells, North Sea) | Machine State Lens (SSE streaming) | [archetypeai/archetypeai-drilling-demo](https://github.com/archetypeai/archetypeai-drilling-demo) |
+| **WiFi Occupancy** | GHOST-IoT smart-home capture (10 days, 9 WiFi clients, anonymized) | Direct query `/v0.5/query` (reasoning) | [archetypeai/archetypeai-wifi-demo](https://github.com/archetypeai/archetypeai-wifi-demo) |
+| **Water Treatment Plant Monitor** | SWaT dataset (iTrust/SUTD) — 6-stage plant, 7 days normal + 4 days of 36 cyber-physical attacks | Machine State Lens (6 parallel SSE sessions) + `/query` (operator suggestions) | [archetypeai/archetypeai-swat-demo](https://github.com/archetypeai/archetypeai-swat-demo) |
+| **OBD-II Embedding Viewer** | OBD-II logs from a 2020 Lexus RX 450hL (2 sessions × ~50 min, 25 sensors) | Omega 1.3 encoder (local checkpoint, precomputed embeddings) | [archetypeai/archetypeai-obd2-demo](https://github.com/archetypeai/archetypeai-obd2-demo) |
+| **Wind Turbine Monitor** | Penmanshiel SCADA (Cubico/Zenodo — 14-turbine farm, 2019, 10-min cadence) | Machine State Lens (one shared session, multiplexed pushes from N streams via FIFO routing) | [archetypeai/archetypeai-wind-turbine-demo](https://github.com/archetypeai/archetypeai-wind-turbine-demo) |

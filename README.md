@@ -1,19 +1,6 @@
-# ⚠️ This repository has moved
+# Unofficial Archetype AI Agent Skills
 
-**Use [archetypeai/archetypeai-agent-skills](https://github.com/archetypeai/archetypeai-agent-skills) instead.**
-
-This repo started as a personal/unofficial project before I joined Archetype AI. The skills now live under the Archetype AI org as the canonical, maintained location. New skills, fixes, and improvements go there. This repo is preserved for history but will not receive further updates.
-
-To install from the new location:
-
-```bash
-git clone https://github.com/archetypeai/archetypeai-agent-skills.git
-cp -r archetypeai-agent-skills/skills/* ~/.claude/skills/
-```
-
----
-
-# Unofficial Archetype AI Agent Skills (archived)
+> **Unofficial / community mirror.** This repo carries the latest agent skills for [Archetype AI's Newton](https://www.archetypeai.io/) while the official version is being figured out. Not maintained by Archetype AI — maintained personally by [@NathanNam](https://github.com/NathanNam). Use at your own discretion.
 
 Agent skills for building applications with [Archetype AI's Newton](https://www.archetypeai.io/) — a real-time sensor intelligence platform that understands physical world data through foundation models.
 
@@ -29,8 +16,12 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 | [newton-activity-monitor](skills/newton-activity-monitor/) | Vision-based analysis and Q&A using the Activity Monitor Lens |
 | [newton-sensor-streaming](skills/newton-sensor-streaming/) | Real-time sensor data ingestion patterns (BLE, OBD2, serial, etc.) |
 | [newton-batch-upload](skills/newton-batch-upload/) | Upload large files (> 255 MB) via multipart presigned URLs |
-| [newton-batch-inference](skills/newton-batch-inference/) | Create and monitor asynchronous batch processing jobs |
+| [newton-machine-state-batch](skills/newton-machine-state-batch/) | Run the Machine State pipeline as an async batch job (Omega 1.4 by default; millions of rows via n-shot KNN) |
+| [newton-machine-state-direct-query](skills/newton-machine-state-direct-query/) | Stateless per-window KNN classification via Omega embeddings + the `/query` endpoint |
+| [newton-activity-detection-batch](skills/newton-activity-detection-batch/) | Run text-in / text-out batch jobs on the C model via the `activity-detection` pipeline — narratives over large CSV/log datasets, with MapReduce / hierarchical-reduce patterns and quality-cliff guidance |
+| [newton-models](skills/newton-models/) | Prod-scoped registry of Newton models, lens identifiers, and pipeline IDs (read-only reference for the other skills) |
 | [omega-local](skills/omega-local/) | Run the Omega 1.3 encoder locally from a checkpoint — offline embeddings, custom downstream models (KNN/IF/PCA), windowing & normalization patterns |
+| [omega-preflight](skills/omega-preflight/) | Vet a binary time-series dataset for `omega_1_4_base` + `machine-state-classification` before a full batch run — 10 fast static checks plus an optional held-out pilot against the real API |
 
 ## Quick Start
 
@@ -47,14 +38,18 @@ cp -r skills/* your-project/.claude/skills/
 ### Invoke a Skill
 
 ```
-/newton-setup             # Set up API access
-/newton-machine-state     # Build a classification pipeline
-/newton-query-prompting   # Engineer /query prompts for structured output
-/newton-activity-monitor  # Analyze visual data
-/newton-sensor-streaming  # Connect hardware sensors
-/newton-batch-upload      # Upload large files (> 255 MB)
-/newton-batch-inference   # Run batch processing jobs
-/omega-local              # Run the Omega encoder locally (offline embeddings)
+/newton-setup                       # Set up API access
+/newton-machine-state               # Build a classification pipeline
+/newton-query-prompting             # Engineer /query prompts for structured output
+/newton-activity-monitor            # Analyze visual data
+/newton-sensor-streaming            # Connect hardware sensors
+/newton-batch-upload                # Upload large files (> 255 MB)
+/newton-machine-state-batch         # Run Machine State as a batch job (async, large datasets)
+/newton-machine-state-direct-query  # Stateless per-window KNN via /query
+/newton-activity-detection-batch    # Batch text generation on the C model (narratives over CSV/log data)
+/newton-models                      # Look up current model / lens / pipeline IDs
+/omega-local                        # Run the Omega encoder locally (offline embeddings)
+/omega-preflight                    # Vet a dataset for omega_1_4_base before a full batch run
 ```
 
 ## Architecture
@@ -85,13 +80,16 @@ These projects demonstrate the patterns covered by these skills:
 
 - [corsense-hrv](https://github.com/NathanNam/corsense-hrv) — Real-time HRV stress detection using BLE heart rate monitors + Newton Machine State & Activity Monitor
 - [obd2-scanner](https://github.com/NathanNam/obd2-scanner) — Browser-based vehicle diagnostics via OBD2/ELM327 + Newton health classification & chat
-- [newton-traffic-demo](https://github.com/archetypeai/newton-traffic-demo) — Live traffic monitoring via Caltrans HLS camera + Newton vision (lens session + model.query)
-- [newton-wildfire-demo](https://github.com/archetypeai/newton-wildfire-demo) — Wildfire detection across 1,200+ ALERTCalifornia cameras + Newton vision
-- [newton-earthquake-demo](https://github.com/archetypeai/newton-earthquake-demo) — Real-time USGS earthquake analysis + Newton text reasoning (direct query API)
-- [newton-grid-demo](https://github.com/archetypeai/newton-grid-demo) — California power grid monitoring via CAISO supply/demand data + Newton text reasoning
-- [newton-drilling-demo](https://github.com/archetypeai/newton-drilling-demo) — Drilling state classification from 14 North Sea wells + Newton Machine State Lens (SSE streaming)
-- [newton-swat-demo](https://github.com/archetypeai/newton-swat-demo) — 6-stage water treatment plant anomaly dashboard with parallel per-stage Machine State Lens sessions + `/query`-generated operator suggestions (reference implementation for both `newton-machine-state` parallel-subsystem pattern and `newton-query-prompting`)
-- [archetype-batch-examples](https://github.com/archetypeai/archetype-batch-examples) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Activity Detection)
+- [archetypeai-traffic-demo](https://github.com/archetypeai/archetypeai-traffic-demo) — Live traffic monitoring via Caltrans HLS camera + Newton vision (lens session + model.query)
+- [archetypeai-wildfire-demo](https://github.com/archetypeai/archetypeai-wildfire-demo) — Wildfire detection across 1,200+ ALERTCalifornia cameras + Newton vision
+- [archetypeai-earthquake-demo](https://github.com/archetypeai/archetypeai-earthquake-demo) — Real-time USGS earthquake analysis + Newton text reasoning (direct query API)
+- [archetypeai-grid-demo](https://github.com/archetypeai/archetypeai-grid-demo) — California power grid monitoring via CAISO supply/demand data + Newton text reasoning
+- [archetypeai-drilling-demo](https://github.com/archetypeai/archetypeai-drilling-demo) — Drilling state classification from 14 North Sea wells + Newton Machine State Lens (SSE streaming)
+- [archetypeai-swat-demo](https://github.com/archetypeai/archetypeai-swat-demo) — 6-stage water treatment plant anomaly dashboard with parallel per-stage Machine State Lens sessions + `/query`-generated operator suggestions (reference implementation for both `newton-machine-state` parallel-subsystem pattern and `newton-query-prompting`)
+- [archetypeai-nasa-jpl-telemanom-demo](https://github.com/archetypeai/archetypeai-nasa-jpl-telemanom-demo) — NASA SMAP/MSL spacecraft telemetry anomaly explorer (Hundman et al., KDD 2018) + Newton Machine State Lens. Single-channel mode (telemetry + 3 MI-picked mode flags) vs. subsystem mode (4 sibling-channel sensors with union-of-flags GT), with honest held-out F1/Precision/Recall, multi-segment normal focus, adaptive window sizing, and vendored `omega-1-4-preflight` static checks.
+- [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Activity Detection)
+- [archetypeai-wind-turbine-demo](https://github.com/archetypeai/archetypeai-wind-turbine-demo) — Side-by-side wind turbine anomaly monitor (Penmanshiel SCADA / Cubico / Zenodo). Flask + Jinja + vanilla-CSS port of the design system; reference implementation for the `MultiplexNewtonSession` pattern (one shared session, FIFO push-tag routing) when the account's lens-runner pool is quota = 1
+- [archetypeai-batch-examples-ghost-iot](https://github.com/archetypeai/archetypeai-batch-examples-ghost-iot) — 1 GB WiFi flow CSV folded into 9 daily narratives via six MapReduce stages on the `activity-detection` batch pipeline (reference implementation for `newton-activity-detection-batch` — cliff sweep, hierarchical reduce, N-way positional split, content-key joins)
 
 ## API Base URL
 
