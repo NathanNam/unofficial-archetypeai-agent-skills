@@ -22,6 +22,7 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 | [newton-models](skills/newton-models/) | Prod-scoped registry of Newton models, lens identifiers, and pipeline IDs (read-only reference for the other skills) |
 | [omega-local](skills/omega-local/) | Run the Omega 1.3 encoder locally from a checkpoint — offline embeddings, custom downstream models (KNN/IF/PCA), windowing & normalization patterns |
 | [omega-preflight](skills/omega-preflight/) | Vet a binary time-series dataset for `omega_1_4_base` + `machine-state-classification` before a full batch run — 10 fast static checks plus an optional held-out pilot against the real API |
+| [newton-data-prep](skills/newton-data-prep/) | Clean, split, and featurize multivariate time-series data before a Newton classifier — gap-aware blocking + imputation, out-of-time train/test split, and joint-state (X, y) featurization |
 
 ## Quick Start
 
@@ -50,6 +51,7 @@ cp -r skills/* your-project/.claude/skills/
 /newton-models                      # Look up current model / lens / pipeline IDs
 /omega-local                        # Run the Omega encoder locally (offline embeddings)
 /omega-preflight                    # Vet a dataset for omega_1_4_base before a full batch run
+/newton-data-prep                   # Clean / split / featurize time-series before classification
 ```
 
 ## Architecture
