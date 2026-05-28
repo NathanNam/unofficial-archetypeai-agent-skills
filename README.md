@@ -22,6 +22,7 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 | [newton-models](skills/newton-models/) | Prod-scoped registry of Newton models, lens identifiers, and pipeline IDs (read-only reference for the other skills) |
 | [omega-local](skills/omega-local/) | Run the Omega 1.3 encoder locally from a checkpoint — offline embeddings, custom downstream models (KNN/IF/PCA), windowing & normalization patterns |
 | [omega-preflight](skills/omega-preflight/) | Vet a binary time-series dataset for `omega_1_4_base` + `machine-state-classification` before a full batch run — 10 fast static checks plus an optional held-out pilot against the real API |
+| [newton-data-prep](skills/newton-data-prep/) | Clean, split, and featurize multivariate time-series data before a Newton classifier — gap-aware blocking + imputation, out-of-time train/test split, and joint-state (X, y) featurization |
 
 ## Quick Start
 
@@ -50,6 +51,7 @@ cp -r skills/* your-project/.claude/skills/
 /newton-models                      # Look up current model / lens / pipeline IDs
 /omega-local                        # Run the Omega encoder locally (offline embeddings)
 /omega-preflight                    # Vet a dataset for omega_1_4_base before a full batch run
+/newton-data-prep                   # Clean / split / featurize time-series before classification
 ```
 
 ## Architecture
@@ -87,7 +89,7 @@ These projects demonstrate the patterns covered by these skills:
 - [archetypeai-drilling-demo](https://github.com/archetypeai/archetypeai-drilling-demo) — Drilling state classification from 14 North Sea wells + Newton Machine State Lens (SSE streaming)
 - [archetypeai-swat-demo](https://github.com/archetypeai/archetypeai-swat-demo) — 6-stage water treatment plant anomaly dashboard with parallel per-stage Machine State Lens sessions + `/query`-generated operator suggestions (reference implementation for both `newton-machine-state` parallel-subsystem pattern and `newton-query-prompting`)
 - [archetypeai-nasa-jpl-telemanom-demo](https://github.com/archetypeai/archetypeai-nasa-jpl-telemanom-demo) — NASA SMAP/MSL spacecraft telemetry anomaly explorer (Hundman et al., KDD 2018) + Newton Machine State Lens. Single-channel mode (telemetry + 3 MI-picked mode flags) vs. subsystem mode (4 sibling-channel sensors with union-of-flags GT), with honest held-out F1/Precision/Recall, multi-segment normal focus, adaptive window sizing, and vendored `omega-1-4-preflight` static checks.
-- [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) — Batch upload, inference, and evaluation with Volve drilling data (Machine State + Activity Detection)
+- [archetypeai-batch-examples-volve](https://github.com/archetypeai/archetypeai-batch-examples-volve) — Batch upload, inference, and evaluation with Volve drilling data (Machine State)
 - [archetypeai-wind-turbine-demo](https://github.com/archetypeai/archetypeai-wind-turbine-demo) — Side-by-side wind turbine anomaly monitor (Penmanshiel SCADA / Cubico / Zenodo). Flask + Jinja + vanilla-CSS port of the design system; reference implementation for the `MultiplexNewtonSession` pattern (one shared session, FIFO push-tag routing) when the account's lens-runner pool is quota = 1
 - [archetypeai-batch-examples-ghost-iot](https://github.com/archetypeai/archetypeai-batch-examples-ghost-iot) — 1 GB WiFi flow CSV folded into 9 daily narratives via six MapReduce stages on the `activity-detection` batch pipeline (reference implementation for `newton-activity-detection-batch` — cliff sweep, hierarchical reduce, N-way positional split, content-key joins)
 
