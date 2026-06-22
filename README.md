@@ -25,7 +25,6 @@ Inspired by [mongodb/agent-skills](https://github.com/mongodb/agent-skills).
 | [atai-newton-fusion-model](skills/atai-newton-fusion-model/) | Call the Newton C 2.6 fusion model on `/query` with text, image, or video in one stateless POST — the first C checkpoint to reason over video frames via `/query` |
 | [atai-newton-omega-model](skills/atai-newton-omega-model/) | Get Omega time-series embeddings (`OmegaEncoder::omega_embeddings_1_4`) over `/query` — one stateless call per channel, fanned out in parallel — for client-side KNN classification, anomaly scoring, and similarity search |
 | [atai-newton-omega-model-data-prep](skills/atai-newton-omega-model-data-prep/) | Clean / split / featurize multivariate time-series CSVs before the Omega model — gap-aware blocking + imputation, out-of-time train/test split, and joint-state (X, y) featurization |
-| [newton-data-prep](skills/newton-data-prep/) | Clean, split, and featurize multivariate time-series data before a Newton classifier — gap-aware blocking + imputation, out-of-time train/test split, and joint-state (X, y) featurization |
 
 ## Quick Start
 
@@ -54,7 +53,6 @@ cp -r skills/* your-project/.claude/skills/
 /newton-models                      # Look up current model / lens / pipeline IDs
 /omega-local                        # Run the Omega encoder locally (offline embeddings)
 /omega-preflight                    # Vet a dataset for omega_1_4_base before a full batch run
-/newton-data-prep                   # Clean / split / featurize time-series before classification
 /atai-newton-fusion-model           # Multimodal (text/image/video) queries on the C 2.6 fusion model
 /atai-newton-omega-model            # Omega time-series embeddings + client-side KNN via /query
 /atai-newton-omega-model-data-prep  # Clean / split / featurize CSVs before the Omega model
